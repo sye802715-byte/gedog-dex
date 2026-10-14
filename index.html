@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEDOG-DEX - Pemindai Batik Tuban</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8C2D19; /* Terracotta Batik */
+            --accent: #D4A359;  /* Emas Kunyit */
+            --dark: #2B1810;    /* Cokelat Tua Gedog */
+            --bg: #FAFAF7;      /* Krem Halus */
+            --card-bg: #FFFFFF;
+            --error: #c0392b;
+            --success: #27ae60;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--dark); 
+            padding-bottom: 85px;
+            background-image: radial-gradient(#8C2D19 0.5px, transparent 0.5px), radial-gradient(#8C2D19 0.5px, #FAFAF7 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        header { 
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: #FFF; 
+            padding: 20px 15px 15px; 
+            text-align: center; 
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(140, 45, 25, 0.2);
+        }
+
+        header h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #FFF; }
+        header p { font-size: 0.75rem; color: var(--accent); margin-top: 3px; letter-spacing: 2px; text-transform: uppercase; }
+
+        .container { padding: 10px 8px; }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(212, 163, 89, 0.25);
+        }
+
+        .card h3 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 1.15rem; margin-bottom: 6px; }
+
+        .couple-welcome-card {
+            background: linear-gradient(135deg, #2B1810 0%, #8C2D19 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(140, 45, 25, 0.25);
+            border: 1px solid var(--accent);
+        }
+
+        .couple-avatar-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .couple-text { flex: 1; margin-left: 12px; }
+        .couple-text h4 { font-family: 'Playfair Display', serif; color: var(--accent); font-size: 1.05rem; }
+        .couple-text p { font-size: 0.78rem; color: #F5EBE0; line-height: 1.3; }
+
+        .edu-banner {
+            background: linear-gradient(135deg, #FFF9F2 0%, #F5EBE0 100%);
+            border-left: 4px solid var(--accent);
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .scanner-container {
+            position: relative;
+            width: 100%;
+            height: 230px;
+            background: #111;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        .scan-overlay {
+            position: absolute;
+            top: 15px; left: 15px; right: 15px; bottom: 15px;
+            border: 2px dashed rgba(212, 163, 89, 0.7);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff3333, transparent);
+            box-shadow: 0 0 8px #ff3333;
+            animation: scanAnim 2.5s infinite ease-in-out;
+        }
+
+        @keyframes scanAnim {
+            0% { top: 10%; }
+            50% { top: 90%; }
+            100% { top: 10%; }
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary) 0%, #6e2111 100%); 
+            color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; 
+            font-weight: 600; font-size: 0.95rem; margin-top: 10px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(140, 45, 25, 0.25);
+        }
+
+        .btn-secondary {
+            background: #f0ece1; color: var(--dark); border: 1px solid var(--accent);
+            padding: 10px; width: 100%; border-radius: 8px; font-size: 0.85rem; margin-top: 8px; font-weight: 600; cursor: pointer;
+        }
+
+        .error-box {
+            background: #FDEDEC;
+            border-left: 4px solid var(--error);
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #78281F;
+            font-size: 0.85rem;
+        }
+
+        .bottom-batik-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212, 163, 89, 0.3);
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .bottom-batik-img { 
+            width: 100%; 
+            height: 190px; 
+            object-fit: cover; 
+            display: block; 
+            background-color: #eee;
+        }
+
+        .bottom-batik-info { padding: 12px 15px; background: #FFFDF9; }
+        .bottom-batik-info h5 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 0.95rem; }
+        .bottom-batik-info p { font-size: 0.75rem; color: #666; margin-top: 2px; }
+
+        .card-full-height {
+            min-height: calc(100vh - 170px);
+            margin-bottom: 0px;
+            padding: 18px 12px;
+        }
+
+        .gedog-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--primary);
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            margin-bottom: 12px;
+            outline: none;
+            background: #FFFDF9;
+        }
+
+        .gedog-scroll-container {
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .gedog-item {
+            background: #FFFDF9;
+            border: 1px solid rgba(212, 163, 89, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .gedog-item h4 {
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .item-foto {
+            width: 100%;
+            height: 185px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 163, 89, 0.25);
+            display: block;
+            background-color: #f0ece1;
+        }
+
+        .item-teks-lengkap {
+            font-size: 0.82rem;
+            color: #333;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .badge-pewarna {
+            display: inline-block;
+            background: rgba(212, 163, 89, 0.2);
+            color: var(--dark);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .game-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(212, 163, 89, 0.3);
+        }
+
+        .poin-box-kanan-atas {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: 1.5px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(140, 45, 25, 0.2);
+        }
+
+        .lobby-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .lobby-card {
+            background: #FFFDF9;
+            border: 1.5px solid rgba(212, 163, 89, 0.5);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .lobby-card:active {
+            transform: scale(0.98);
+            border-color: var(--primary);
+        }
+
+        .lobby-card h4 {
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lobby-card p {
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .reward-badge {
+            display: inline-block;
+            background: rgba(212, 163, 89, 0.2);
+            color: var(--dark);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .puzzle-board {
+            width: fit-content;
+            display: grid;
+            grid-template-columns: repeat(3, 86px);
+            grid-template-rows: repeat(5, 68px);
+            gap: 2px;
+            margin: 12px auto;
+            background: var(--dark);
+            border: 3px solid var(--accent);
+            border-radius: 12px;
+            padding: 3px;
+            box-shadow: 0 4px 12px rgba(43, 24, 16, 0.2);
+        }
+
+        .puzzle-tile {
+            width: 86px;
+            height: 68px;
+            background-size: 258px 340px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: transform 0.15s, border 0.15s;
+        }
+
+        .puzzle-tile.selected {
+            border: 3px solid #ffcc00 !important;
+            transform: scale(0.92);
+            box-shadow: 0 0 10px #ffcc00;
+        }
+
+        .puzzle-preview-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+            background: #FFF;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px dashed var(--accent);
+        }
+
+        .puzzle-preview-img {
+            width: 48px;
+            height: 64px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--accent);
+        }
+
+        .game-question {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 16px;
+            line-height: 1.45;
+            min-height: 48px;
+        }
+
+        .game-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-option {
+            background: #FFFFFF;
+            border: 1.5px solid rgba(140, 45, 25, 0.3);
+            color: var(--dark);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .btn-option:active { transform: scale(0.98); }
+
+        .btn-option.correct {
+            background: #d4edda !important;
+            border-color: var(--success) !important;
+            color: #155724 !important;
+        }
+
+        .btn-option.wrong {
+            background: #f8d7da !important;
+            border-color: var(--error) !important;
+            color: #721c24 !important;
+        }
+
+        .game-feedback {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-height: 24px;
+        }
+
+        .nav-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            background: #FFFFFF; 
+            display: flex; 
+            justify-content: flex-start; 
+            align-items: center;
+            padding: 10px 14px; 
+            border-top-left-radius: 16px; 
+            border-top-right-radius: 16px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 99;
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-bar::-webkit-scrollbar { display: none; }
+
+        .nav-item { 
+            flex: 0 0 auto;
+            text-align: center; 
+            font-size: 0.75rem; 
+            color: #888; 
+            cursor: pointer; 
+            font-weight: 600; 
+            min-width: 58px;
+        }
+
+        .nav-item div { font-size: 1.25rem; margin-bottom: 2px; }
+        .active { color: var(--primary); }
+        .hidden { display: none; }
+        
+        .item-teks-lengkap {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: pre-line;
+  line-height: 1.8;
+}
+
+.gedog-item {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.gedog-item img {
+  max-width: 100%;
+  height: auto;
+}
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GEDOG-DEX</h1>
+        <p>Batik Tuban Smart Scanner</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- HALAMAN 1: SCANNER & LAMAN UTAMA -->
+        <div id="page-scan">
+            <div class="couple-welcome-card">
+                <div class="couple-avatar-box">
+                    <span>🤴🏻</span><span>👸🏻</span>
+                </div>
+                <div class="couple-text">
+                    <h4 id="salam-text">Sugeng Rawuh!</h4>
+                    <p>Mari melestarikan indahnya mahakarya kain Batik Gedog khas Bumi Ranggalawe Tuban.</p>
+                </div>
+            </div>
+
+            <div class="edu-banner" onclick="bukaEdukasi()">
+                <div>
+                    <b style="color: var(--primary); font-size: 0.95rem;"> Mengenal Batik Gedog Tuban</b>
+                    <p style="font-size: 0.78rem; color: #666; margin-top: 2px;">Penjelasan lengkap sejarah, proses tenun & keunikannya</p>
+                </div>
+                <span style="font-size: 1.2rem; color: var(--primary);">➔</span>
+            </div>
+
+            <div class="card">
+                <h3>Pemindai Motif AI</h3>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px;">Arahkan kamera ke kain motif Batik Gedog</p>
+                
+                <div class="scanner-container">
+                    <video id="webcam" autoplay playsinline muted></video>
+                    <div class="scan-overlay">
+                        <div class="scan-line"></div>
+                    </div>
+                </div>
+
+                <button class="btn-secondary" onclick="bukaKamera()">📷 Aktifkan Kamera HP</button>
+                <button class="btn-primary" onclick="simulasiScanError()">🔍 Pindai Motif Sekarang</button>
+                
+                <div id="error-result" class="error-box hidden">
+                    <b style="color: var(--error); font-size: 0.95rem;"> Motif Tidak Dikenali / Tidak Ditemukan!</b>
+                    <p style="margin-top: 4px; line-height: 1.3;">
+                        Pastikan kamera diarahkan dengan jelas ke permukaan kain Batik Gedog Tuban dan dapatkan pencahayaan yang cukup.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bottom-batik-card">
+                <img id="batik-utama-img" src="batik-utama.jpg" onerror="this.src='https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80'" alt="Mahakarya Batik Gedog Tuban" class="bottom-batik-img">
+                <div class="bottom-batik-info">
+                    <h5>Mahakarya Batik Gedog Tuban</h5>
+                    <p>Keindahan tenun tangan & canting cantrik warisan leluhur</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN EDUKASI -->
+        <div id="page-edukasi" class="card hidden">
+            <button onclick="tutupEdukasi()" class="btn-secondary" style="width: auto; padding: 6px 12px; margin-bottom: 12px;">⬅ Kembali ke Utama</button>
+            <h3>Sejarah & Keunikan Batik Gedog Tuban</h3>
+            <hr style="border: 0.5px solid #eee; margin: 10px 0;">
+            <p style="font-size: 0.85rem; line-height: 1.5; color: #333; margin-bottom: 10px;">
+                <b>Batik Gedog</b> merupakan warisan budaya khas Kabupaten Tuban, Jawa Timur, yang sangat unik karena proses pembuatannya memadukan 3 tahapan tradisional: <b>Menghasilkan Benang (Pintal), Menenun Kain (Tali), dan Membatik</b>.
+            </p>
+            <p style="font-size: 0.85rem; line-height: 1.5; color: #333; margin-bottom: 10px;">
+                Nama <i>"Gedog"</i> berasal dari bunyi khas <b>"dog... dog... dog..."</b> yang dihasilkan oleh alat tenun tradisional kayu saat para pengrajin menenun benang kapas menjadi kain kasar khas Gedog.
+            </p>
+            <p style="font-size: 0.85rem; line-height: 1.5; color: #333;">
+                Sentra utama pembuatan kain Batik Gedog ini terpusat di wilayah rukun pengrajin di <b>Kecamatan Kerek, Kabupaten Tuban</b> (salah satunya Desa Margorejo).
+            </p>
+        </div>
+
+        <!-- HALAMAN 2: SI GEDOG -->
+        <div id="page-gedog" class="card card-full-height hidden">
+            <h2 class="gedog-title">INILAH SI GEDOG YANG BERASAL DARI TUBAN✨✨</h2>
+            <input type="text" id="searchBatik" class="search-box" placeholder="🔍 Cari nama motif batik..." onkeyup="cariMotif()">
+
+            <div class="gedog-scroll-container" id="gedogList">
+                <div class="gedog-item">
+                    <h4>Motif Burung Lokcan</h4>
+                    <span class="badge-pewarna">Pewarna Alami / Indigo & Kayu Tegeran</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Melambangkan kebebasan, keharmonisan, dan pengaruh akulturasi budaya pesisiran Tuban yang kaya akan nilai spiritual.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Ganggeng</h4>
+                    <span class="badge-pewarna">Pewarna Alami & Sintetis</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Terinspirasi dari tumbuhan ganggang laut di pesisir Tuban. Melambangkan keluwesan, daya tahan hidup, dan keterikatan dengan alam.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Kembang Kates</h4>
+                    <span class="badge-pewarna">Pewarna Alami / Daun Pepaya & Kayu</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Melambangkan kesederhanaan, ketulusan hati, serta memberikan manfaat keberkahan bagi lingkungan sekitar.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Unyeng-Unyeng</h4>
+                    <span class="badge-pewarna">Pewarna Alami</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Berbentuk pusaran yang melambangkan pusat kehidupan, kesatuan pikiran, dan fokus manusia kepada Sang Pencipta.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Gringsing</h4>
+                    <span class="badge-pewarna">Pewarna Alami / Indigo (Nila)</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Berasal dari kata "Gering" (sakit) dan "Sing" (menolak). Diyakini masyarakat Tuban sebagai lambang penolak bahaya serta penyakit.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Slimun</h4>
+                    <span class="badge-pewarna">Pewarna Alami Hitam / Mengkudu</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Memiliki simbol gapura dan lencana yang melambangkan penghormatan, perlindungan, serta ketenangan batin.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Kijing Miring</h4>
+                    <span class="badge-pewarna">Pewarna Alami / Nila & Mengkudu</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Pengingat akan hakikat kehidupan dan kematian, serta simbol toleransi antara ajaran agama dan budaya lokal Tuban.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Kembang Waluh</h4>
+                    <span class="badge-pewarna">Pewarna Alami Kuning & Merah</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Melambangkan kebahagiaan, rasa syukur atas panen, dan doa keselamatan bagi kehidupan keluarga.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Panji Ori</h4>
+                    <span class="badge-pewarna">Pewarna Alami Tegeran</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Melambangkan jiwa kepemimpinan, keberanian membela kebenaran, dan sifat ksatria khas pahlawan Tuban.
+                    </p>
+                </div>
+                <div class="gedog-item">
+                    <h4>Motif Kolo Rambat</h4>
+                    <span class="badge-pewarna">Pewarna Alami & Sintetis</span>
+                    <p style="font-size: 0.82rem; color: #444; line-height: 1.4;">
+                        <b>Filosofi:</b> Terinspirasi dari tumbuhan merambat, melambangkan tali silaturahmi yang erat dan rezeki yang terus bertumbuh.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN 3: PETA LOKASI -->
+        <div id="page-peta" class="card hidden">
+            <h3>Sentra Pengrajin</h3>
+            <p style="font-size: 0.85rem; color: #555; margin-bottom: 12px;">Desa Margorejo, Kecamatan Kerek, Kabupaten Tuban</p>
+            <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
+                <button class="btn-primary" style="background: #2D6A4F;">📍 Petunjuk Rute Google Maps</button>
+            </a>
+        </div>
+
+        <!-- HALAMAN 4: MAKSTUB (29 KULINER KHAS TUBAN) -->
+        <div id="page-makstub" class="card card-full-height hidden">
+            <h2 class="gedog-title">MAKSTUB: KULINER KHAS TUBAN 🥘</h2>
+            
+            <input type="text" id="searchMakstub" class="search-box" placeholder="🔍 Cari makanan khas Tuban..." onkeyup="cariMakstub()">
+
+            <div class="gedog-scroll-container" id="makstubList"></div>
+        </div>
+        
+        <!-- HALAMAN MINSTUB -->
+<div id="page-minstub" class="card card-full-height hidden">
+
+    <h2 class="gedog-title">MINSTUB: MINUMAN KHAS TUBAN 🍹</h2>
+
+    <input 
+        type="text"
+        id="searchMinstub"
+        class="search-box"
+        placeholder="🔍 Cari minuman khas Tuban..."
+        onkeyup="cariMinstub()"
+    >
+
+    <div 
+        class="gedog-scroll-container"
+        id="minstubList">
+    </div>
+
+</div>
+
+<!-- HALAMAN JETUB -->
+<div id="page-jetub" class="card card-full-height hidden">
+    <h2 class="gedog-title">JETUB: JEJAK TUBAN ⭐</h2>
+
+    <div style="display:flex; gap:15px; margin-top:20px;">
+
+        <!-- WISTUB -->
+        <div 
+            class="gedog-item"
+            style="flex:1; text-align:center; cursor:pointer;"
+            onclick="switchPage('wistub', this)"
+        >
+            <div style="font-size:45px;">🏞️</div>
+            <h3>WISTUB</h3>
+            <p>Wisata Khas Tuban</p>
+        </div>
+
+        <!-- KASTUB -->
+        <div 
+            class="gedog-item"
+            style="flex:1; text-align:center; cursor:pointer;"
+            onclick="switchPage('kastub', this)"
+        >
+            <div style="font-size:45px;">🎭</div>
+            <h3>KASTUB</h3>
+            <p>Kesenian Asli Tuban</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- HALAMAN WISTUB -->
+<div id="page-wistub" class="card card-full-height hidden">
+    <h2 class="gedog-title">WISTUB: WISATA KHAS TUBAN 🏞️</h2>
+
+    <div class="gedog-scroll-container" id="wistubList"></div>
+</div>
+
+<!-- HALAMAN KASTUB -->
+<div id="page-kastub" class="card card-full-height hidden">
+    <h2 class="gedog-title">KASTUB: KESENIAN ASLI TUBAN 🎭</h2>
+
+    <div class="gedog-scroll-container" id="kastubList"></div>
+</div>
+
+        <!-- HALAMAN 6: MINI GAME (LOBBY + PUZZLE 3x5 + KUIS) -->
+        <div id="page-game" class="card card-full-height hidden">
+            
+            <div class="game-top-bar">
+                <h2 class="gedog-title" style="margin: 0;">ARENA GAME 🎮</h2>
+                <div class="poin-box-kanan-atas">
+                    <span>🏆</span> <span id="total-poin-display">0</span> Poin
+                </div>
+            </div>
+
+            <!-- TAMPILAN 1: LOBI PEMILIHAN GAME -->
+            <div id="game-lobby">
+                <p style="font-size: 0.82rem; color: #666; margin-bottom: 12px;">Pilih permainan yang ingin kamu mainkan:</p>
+                
+                <div class="lobby-container">
+                    <div class="lobby-card" onclick="pilihGame('puzzle')">
+                        <h4>🧩 Puzzle Batik 3×5 <span>➔</span></h4>
+                        <p>Rakit 15 kepingan kain bermotif Batik Gedog Tuban sampai utuh sempurna.</p>
+                        <span class="reward-badge">🎁 Hadiah: +100 Poin</span>
+                    </div>
+
+                    <div class="lobby-card" onclick="pilihGame('kuis')">
+                        <h4>❓ Kuis Kultur Tuban <span>➔</span></h4>
+                        <p>Uji wawasanmu seputar sejarah batik dan aneka kuliner khas Tuban.</p>
+                        <span class="reward-badge">🎁 Hadiah: +20 Poin / Jawaban</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAMPILAN 2: GAME PUZZLE 3x5 -->
+            <div id="subgame-puzzle" class="hidden">
+                <button onclick="kembaliKeLobbyGame()" class="btn-secondary" style="width: auto; padding: 6px 14px; margin-bottom: 12px;">⬅ Ganti Pilihan Game</button>
+                
+                <div class="card" style="background: #FFFDF9; border: 1px solid rgba(212, 163, 89, 0.4); text-align: center; padding: 12px;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);" id="puzzle-moves-display">Langkah: 0</div>
+                    <p style="font-size: 0.78rem; color: #555; margin-top: 4px;">Ketuk 2 keping untuk menukar posisi sampai kain batik utuh!</p>
+
+                    <!-- Papan Puzzle 3x5 (15 Keping) -->
+                    <div class="puzzle-board" id="puzzle-board"></div>
+
+                    <div class="game-feedback" id="puzzle-feedback"></div>
+
+                    <div class="puzzle-preview-box">
+                        <img id="puzzle-preview-img" src="batik-puzzle.jpg" onerror="this.src='https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80'" class="puzzle-preview-img" alt="Batik Target">
+                        <span style="font-size: 0.75rem; color: #666; text-align: left;">Contoh Motif Jadi<br><b>Kain Batik Tuban (3×5)</b></span>
+                    </div>
+
+                    <!-- Input File Tersembunyi untuk Pilih dari Galeri HP -->
+                    <input type="file" id="input-foto-puzzle" accept="image/*" style="display: none;" onchange="gantiFotoDariGaleri(event)">
+                    
+                    <button class="btn-secondary" onclick="document.getElementById('input-foto-puzzle').click()" style="margin-top: 10px;">
+                        📁 Pilih Foto Sendiri dari Galeri HP
+                    </button>
+                    <button class="btn-primary" onclick="acakPuzzle()" style="margin-top: 8px;">🔄 Acak Ulang Puzzle</button>
+                </div>
+            </div>
+
+            <!-- TAMPILAN 3: GAME KUIS -->
+            <div id="subgame-kuis" class="hidden">
+                <button onclick="kembaliKeLobbyGame()" class="btn-secondary" style="width: auto; padding: 6px 14px; margin-bottom: 12px;">⬅ Ganti Pilihan Game</button>
+                
+                <div class="card" style="background: #FFFDF9; border: 1px solid rgba(212, 163, 89, 0.4); padding: 14px;">
+                    <div class="game-question" id="game-question-text">Memuat pertanyaan...</div>
+                    <div class="game-options" id="game-options-container"></div>
+                    <div class="game-feedback" id="game-feedback-text"></div>
+                    <button id="btn-next-question" class="btn-primary hidden" onclick="pertanyaanSelanjutnya()">Lanjut ➔</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    
+ <!-- NAVIGASI BAWAH -->
+<div class="nav-bar">
+
+    <div class="nav-item active" id="nav-scan" onclick="switchPage('scan', this)">
+        <div>📷</div>Pindai
+    </div>
+
+    <div class="nav-item" id="nav-gedog" onclick="switchPage('gedog', this)">
+        <div>📖</div>Si Gedog
+    </div>
+    
+    <div class="nav-item" id="nav-jetub" onclick="switchPage('jetub', this)">
+    <div>⭐</div>JETUB
+</div>
+    
+    <div class="nav-item" id="nav-makstub" onclick="switchPage('makstub', this)">
+        <div>🥘</div>MAKSTUB
+    </div>
+
+    <div class="nav-item" id="nav-minstub" onclick="switchPage('minstub', this)">
+        <div>🍹</div>MINSTUB
+    </div>
+
+    <div class="nav-item" id="nav-game" onclick="switchPage('game', this)">
+        <div>🎮</div>Game
+    </div>
+
+    
+
+</div>
+
+</div>
+
+    <script>
+        // 29 DATA KULINER KHAS TUBAN DENGAN DETEKSI FOTO GANDA (AUTO-FALLBACK)
+        const daftarMakstub = [
+            {
+                nama: "Serabeh Selong",
+                foto: ["554557.jpg", "serabeh-selong.jpg"],
+                teks: `Serabi selong khas Tuban adalah salah satu kue tradisional khas Kabupaten Tuban yang juga dikenal dengan sebutan kue renda, apem, atau Ceylon.
+
+Ciri-Ciri Utama
+• Bentuk Renda: Memiliki pinggiran yang tipis, garing, dan berenda, sementara bagian tengahnya lebih tebal, empuk, serta berserat (berongga).
+• Rasa: Perpaduan rasa manis dari gula dan gurih dari santan kelapa kental.
+• Bahan Dasar: Dibuat dari campuran tepung beras, santan, ragi (atau tape singkong sebagai pengembang alami), gula pasir, garam, dan telur.
+• Penyajian: Sering dinikmati sebagai camilan tradisional yang cocok disantap saat santai atau ditemani dengan siraman santan kental.
+
+sumber: GoTravelly`
+            },
+            {
+                nama: "Garang Asem",
+                foto: ["garang-asem.jpg", "garang-asem.jpeg", "garang-asem.png"],
+                teks: `Garang asem Tuban adalah kuliner khas pesisir berupa olahan ikan laut berkuah segar dengan dominasi rasa pedas, asam, dan gurih yang kuat.
+
+Berbeda dengan garang asem dari Jawa Tengah yang berbahan dasar ayam dan dibungkus daun pisang, garang asem Tuban disajikan dalam mangkuk dengan kuah kaya rempah dan biasanya menggunakan ikan laut segar seperti ikan manyung atau tenggiri.
+
+Ciri Khas Garang Asem Tuban
+• Bahan Utama: Menggunakan ikan laut, paling populer adalah ikan manyung (bagian kepala atau badan) atau ikan tenggiri.
+• Tekstur & Rasa: Kuahnya cenderung kental atau kaya bumbu, berwarna kekuningan, dengan sensasi pedas dari cabai rawit utuh serta rasa asam yang segar dari belimbing wuluh atau tomat hijau.
+• Penyajian: Tidak dibungkus daun pisang, melainkan dimasak langsung di panci/wajan lalu disajikan di mangkuk
+
+sumber: blokTuban.com`
+            },
+            {
+                nama: "Ampo",
+                foto: ["ampo.jpg", "ampo.jpeg", "ampo.png"],
+                teks: `Ampo khas Tuban adalah camilan tradisional unik yang terbuat dari 100% tanah liat murni tanpa ada tambahan bahan lain.
+
+Fakta Unik Ampo Tuban
+• Bentuk: Berupa gulungan panjang, tipis, dan menyerupai stik atau serutan berwarna hitam legam.
+• Rasa dan Tekstur: Memiliki tekstur renyah dengan rasa yang tawar atau mirip seperti kacang mentah.
+• Asal Daerah: Pusat pembuatannya berada di Desa Bektiharjo, Kecamatan Semanding (Dukuh Trowulan).
+• Sejarah: Dulu dikonsumsi masyarakat Kabupaten Tuban sebagai makanan alternatif saat masa-masa sulit pada zaman penjajahan.
+• Manfaat & Tradisi: Masyarakat setempat percaya bahwa ampo dapat mendinginkan perut dan menguatkan pencernaan, serta sering dipakai sebagai sesaji adat.
+
+Jika Anda tertarik, saya bisa menjelaskan lebih lanjut mengenai:
+• Proses pembuatan ampo dari awal hingga matang
+• Kandungan atau aspek kesehatan dari kebiasaan makan tanah liat (geophagia)
+
+sumber: detikcom`
+            },
+            {
+                nama: "Kari Rajungan",
+                foto: ["kari-rajungan.jpg", "kare-rajungan.jpg"],
+                teks: `Kare rajungan khas Tuban adalah kuliner khas pesisir Jawa Timur berupa kepiting laut (rajungan) segar yang dimasak dengan kuah santan pedas, gurih, dan kaya rempah.
+
+Ciri Khas dan Penyajian
+• Rasa: Cenderung pedas menyengat, gurih dari santan, serta ada sedikit rasa manis alami dari daging rajungan.
+• Tekstur: Daging rajungan tetap lembut dan mudah lepas dari cangkangnya.
+• Pendamping: Disajikan bersama nasi putih hangat, sambal terasi, dan lalapan segar.
+
+sumber: Kompas.com`
+            },
+            {
+                nama: "Gemblong",
+                foto: ["gemblong.jpg", "gemblong-compreng.jpg"],
+                teks: `Gemblong Tuban adalah jajanan tradisional khas dari Kabupaten Tuban, Jawa Timur, yang terbuat dari ketan dan memiliki tekstur empuk, gurih, serta rasa yang lezat.
+
+Keunikan dan Tradisi
+• Simbol Lamaran: Di Tuban, khususnya di daerah seperti Desa Compreng, gemblong bukan sekadar camilan. Makanan ini menjadi simbol penting dalam tradisi lamaran atau pernikahan.
+• Tradisi "Gemblongan": Acara lamaran sering disebut warga setempat sebagai gemblongan, di mana pihak keluarga wanita membuat atau menyuguhkan gemblong dalam jumlah besar untuk dibagikan kepada sanak saudara dan tetangga.
+• Tekstur Khas: Gemblong khas Tuban (seperti Gemblong Compreng) dikenal memiliki tekstur yang lebih lembut, empuk, dan gurih dibandingkan gemblong dari daerah lain.
+
+Sumber: Radar Utara - Disway`
+            },
+            {
+                nama: "Dumbek",
+                foto: ["dumbek.jpg", "kue-dumbek.jpg"],
+                teks: `Dumbek Tuban adalah jajanan pasar tradisional khas Kabupaten Tuban, Jawa Timur, yang berbentuk unik menyerupai corong atau terompet kecil dan terbuat dari perpaduan tepung beras, santan, serta gula merah.
+
+Karakteristik dan Keunikan
+• Bahan Alami: Dibuat dari tepung beras pilihan, santan kelapa, dan gula jawa tanpa pemanis buatan atau pengawet.
+• Pembungkus Khas: Adonan dibungkus menggunakan daun lontar (atau siwalan) muda yang dibentuk menjadi kerucut memanjang.
+• Cita Rasa: Memiliki tekstur lembut, aroma yang harum dari daun lontar, serta rasa manis legit yang khas.
+
+Sumber: blokTuban.com`
+            },
+            {
+                nama: "Becek Menthok",
+                foto: ["becek-menthok.jpg", "becek-menthok.jpeg", "becek-mentok.jpg"],
+                teks: `Becek Menthok adalah kuliner khas Kabupaten Tuban, Jawa Timur, berupa olahan daging menthok (itik serati) berkuah santan kental yang kaya rempah.
+
+Ciri Khas dan Karakteristik
+• Kuah Unik: Memiliki tampilan dan cita rasa yang merupakan perpaduan antara kare dan gulai, tetapi dengan rasa yang lebih tajam, gurih, asin, dan pedas.
+• Penggunaan Kayu Mesoyi: Salah satu bumbu wajib yang membedakan becek khas Tuban adalah tambahan kayu mesoyi (aromanya mirip kayu manis namun lebih tebal dan cocok untuk masakan gurih).
+• Bumbu Jangkep: Diracik dari bumbu halus seperti bawang merah, bawang putih, kemiri, cabai, ketumbar, laos, kunyit, daun jeruk, dan daun salam.
+• Tekstur Daging: Daging menthok direbus dalam waktu yang cukup lama (sekitar 2 jam) agar teksturnya empuk, bumbunya meresap sampai ke dalam, dan sama sekali tidak amis.
+• Penyajian: Umumnya disantap bersama nasi putih hangat atau nasi jagung, serta sering dilengkapi dengan taburan bawang goreng.
+
+Sumber: detikcom`
+            },
+            {
+                nama: "Cumi cumi hitam",
+                foto: ["cumi-hitam.jpg", "cumi-cumi-hitam.jpg"],
+                teks: `Cumi-cumi hitam khas Tuban adalah hidangan khas pesisir pantai utara (Pantura) Jawa yang menggunakan tinta alami cumi-cumi sebagai kuah atau bumbu utamanya.
+
+Karakteristik & Cita Rasa
+• Warna: Hitam pekat dari tinta cumi yang dibiarkan utuh di dalam tubuh cumi tanpa dibuang.
+• Rasa: Gurih, asin, kaya akan rasa umami (gurih alami dari kandungan tinta), dan cenderung pedas karena penggunaan cabai rawit yang khas.
+• Tekstur: Cumi dimasak sebentar agar dagingnya tetap kenyal dan tidak alot. Saat dimasak, cumi mengeluarkan airnya sendiri tanpa perlu tambahan banyak air.
+
+Sumber: cookpad.com`
+            },
+            {
+                nama: "Belut pedas",
+                foto: ["belut-pedas.jpg", "belut-rica-rica.jpg"],
+                teks: `Belut pedas khas Tuban (atau sering diolah sebagai belut rica-rica) adalah salah satu kuliner legendaris dari Kabupaten Tuban, Jawa Timur, yang terkenal dengan perpaduan rasa pedas, gurih, dan rempah yang kuat.
+
+Ciri Khas Utama:
+• Bahan Baku Segar: Umumnya menggunakan belut sawah segar tangkapan lokal yang berdaging tebal, empuk, dan tidak amis.
+• Tekstur Belut: Berbeda dari sekadar belut goreng kering yang membuatnya keras atau alot, belut khas Tuban dimasak sedemikian rupa—kadang digoreng tidak terlalu kering atau diolah bersama bumbu—sehingga tekstur dagingnya tetap lembut, kenyal, dan lumer di mulut.
+• Varian Bumbu Rica-Rica: Memiliki dua varian utama, yaitu rica-rica kering (bumbunya meresap pekat dan menyatu di badan belut) serta rica-rica basah (dengan bumbu rempah atau kuah pedas yang melimpah dan menantang lidah).
+• Rempah Kuat: Bumbu halusnya terdiri dari campuran cabai merah, cabai rawit super pedas, bawang merah, bawang putih, terasi, serai, daun jeruk, serta lengkuas
+
+Sumber: Kompas.com`
+            },
+            {
+                nama: "Sate menthok",
+                foto: ["sate-menthok.jpg", "sate-mentok.jpg"],
+                teks: `Sate menthok khas Tuban adalah salah satu kuliner tradisional yang unik dan legendaris dari Kabupaten Tuban, Jawa Timur.
+
+Karakteristik Utama
+• Bahan Baku: Berbeda dari sate pada umumnya yang menggunakan daging ayam, sapi, atau kambing, sate ini menggunakan daging menthok (jenis unggas yang mirip dengan itik atau angsa).
+• Tekstur Daging: Potongan daging menthok dibuat cukup besar seukuran ibu jari orang dewasa atau sate kambing. Teksturnya kenyal, juicy, tidak alot, serta terasa nikmat saat dikunyah.
+• Rasa: Rasanya gurih dan khas dengan aroma bakar arang yang kuat, sering kali dinilai mirip dengan perpaduan daging bebek dan kambing.
+• Penyajian: Dalam satu porsi biasanya berisi 10 tusuk sate. Sate disiram atau disajikan bersama bumbu kecap manis, irisan bawang merah segar, potongan tomat, serta sambal terasi.
+• Pasangan Makan: Sate menthok paling nikmat disantap bersama becek menthok (sejenis gulai atau olahan berkuah khas menthok yang pedas-gurih) dan nasi jagung.
+
+Sumber: Tugu Jatim`
+            },
+            {
+                nama: "Keripik gayam",
+                foto: ["keripik-gayam.jpg", "kripik-gayam.jpg"],
+                teks: `Keripik gayam adalah makanan ringan khas Tuban yang terbuat dari biji buah gayam (Inocarpus fagifer).
+
+Berikut adalah deskripsi lengkap mengenai keripik gayam khas Tuban:
+1. Bahan Baku Utama
+• Buah Gayam: Pohon gayam tumbuh di daerah tropis yang lembap. Di Tuban, salah satu sentra produksinya berada di Desa Mandirijo, Kecamatan Merakurak.
+• Kelangkaan: Buah ini cukup langka dan tidak bisa dikonsumsi langsung dalam kondisi mentah karena kulit serta daging buahnya keras.
+2. Karakteristik Rasa dan Tekstur
+• Rasa: Memiliki cita rasa yang gurih, khas, serta perpaduan rasa alami dari buahnya.
+• Tekstur: Cenderung renyah dan kriuk. Di beberapa daerah atau produsen tertentu (seperti di Mandirijo), teksturnya dibuat lebih renyah dan tidak terlalu keras.
+
+Sumber: Blibli`
+            },
+            {
+                nama: "Rujak engos engos",
+                foto: ["rujak-engos-engos.jpg", "rujak-engos.jpg"],
+                teks: `Rujak engos-engos adalah kudapan atau makanan khas dari daerah pesisir Kabupaten Tuban, Jawa Timur, terutama wilayah Palang.
+
+Karakteristik Utama
+• Bahan Utama: Menggunakan rumput laut (disebut engos-engos) yang sudah direbus dengan tekstur yang renyah dan segar.
+• Isi Tambahan: Biasanya dicampur dengan sayuran seperti kangkung, kecambah (toge), serta irisan buah segar (seperti nanas, timun, bengkuang, belimbing, kedondong, atau pepaya muda). Opsional juga bisa ditambah lontong.
+• Bumbu Rujak: Bumbu diulek dari campuran cabai merah keriting, cabai rawit, terasi, asam jawa, garam, serta ciri khas utamanya yaitu petis khas Tuban (kadang ditambah bumbu kacang sesuai selera).
+• Cita Rasa: Perpaduan rasa pedas, asin, dan gurih yang khas dari hasil laut serta bumbu petis.
+
+Sumber: Tuban Smart City`
+            },
+            {
+                nama: "Rempeyek Bunder Saonone",
+                foto: ["rempeyek-bunder.jpg", "rempeyek-bunder-saonone.jpg"],
+                teks: `Rempeyek Bunder Saonone adalah makanan ringan khas dari Kabupaten Tuban, tepatnya berasal dari Dusun Sambong Lombok, Kecamatan Bangilan.
+
+Karakteristik & Informasi Utama
+• Asal Daerah: Diproduksi di Dusun Sambong Lombok, Kecamatan Bangilan, Kabupaten Tuban.
+• Cita Rasa & Tekstur: Memiliki rasa yang gurih, renyah, dan asin khas bumbu rempeyek tradisional.
+• Bentuk & Tampilan: Berbentuk bundar (sesuai namanya) dengan isian yang khas (seperti kacang tanah) dan tekstur garing.
+
+Sumber: Tuban Smart City`
+            },
+            {
+                nama: "Keripik Gedebog",
+                foto: ["keripik-gedebog.jpg", "keripik-gedebog-pisang.jpg"],
+                teks: `Keripik Gedebog khas Tuban (dikenal juga dengan nama seperti The Bog Crispy atau olahan dari Galuh Rebogpis Snack) adalah camilan unik berbahan dasar pelepah atau batang semu pohon pisang—khususnya pisang kepok—yang diolah oleh pelaku UMKM lokal, salah satunya di Desa Prambonwetan, Kecamatan Rengel, Kabupaten Tuban.
+
+Berikut deskripsi lengkap mengenai karakteristik, proses, dan keunggulannya:
+1. Karakteristik & Rasa
+• Bahan Baku: Menggunakan bagian dalam atau serat pelepah/batang pisang (biasanya jenis pisang kepok yang masih muda) yang sebelumnya dianggap sebagai limbah pertanian.
+• Tekstur & Cita Rasa: Memiliki tekstur yang sangat renyah (kriuk) dan gurih, menyerupai keripik atau kerupuk premium, dengan bumbu rempah khas yang menutupi rasa asli batang pisang sehingga tidak pahit.
+• Varian Rasa: Hadir dalam berbagai pilihan rasa kekinian seperti original, balado, pedas manis, hingga sapi panggang atau pedas dower.
+
+Sumber: Tuban Smart City`
+            },
+            {
+                nama: "Serabi lodeh",
+                foto: ["serabi-lodeh.jpg", "serabeh-lodeh.jpg"],
+                teks: `Serabi lodeh (atau serabeh lodeh) adalah kuliner malam yang unik dan khas dari Kabupaten Tuban, Jawa Timur.
+
+Karakteristik dan Keunikan
+• Perpaduan Rasa: Berbeda dari serabi daerah lain yang biasanya disajikan manis dengan kinca atau kelapa parut, serabi khas Tuban memiliki rasa dasar serabi yang cenderung asin-gurih lalu disiram dengan kuah sayur lodeh yang gurih, pedas, dan sedikit manis.
+• Pengganti Lontong/Nasi: Serabi di sini berfungsi menggantikan lontong atau nasi yang biasa disantap bersama sayur lodeh.
+• Isian Kuah Lodeh: Kuah lodeh pelengkapnya sering kali diisi dengan potongan labu, mie, hingga tambahan telur.
+• Proses Masak Tradisional: Adonan tepung beras dimasak menggunakan cetakan di atas tungku kayu bakar, sehingga menghasilkan aroma smoky (asap) yang khas pada serabi.
+
+Sumber: Tuban Smart City`
+            },
+            {
+                nama: "Pelas palang",
+                foto: ["pelas-palang.jpg", "pelas-palang.jpeg"],
+                teks: `Pelas Palang adalah kudapan atau lauk khas dari Kecamatan Palang, Kabupaten Tuban, Jawa Timur, yang bentuk dan teksturnya mirip dengan dadar jagung atau bakwan jagung.
+
+Karakteristik dan Cita Rasa
+• Bahan utama: Terbuat dari jagung muda (diiris, ditumbuk, atau diulek/diplok) yang dipadukan dengan bumbu rempah tradisional dan irisan daun bawang.
+• Rasa: Memiliki ciri khas rasa yang pedas, asin, gurih, dan sedikit manis khas kuliner wilayah pesisir utara.
+• Cara memasak: Adonan dipipihkan atau ditempel-tempelkan langsung di pinggir wajan saat digoreng.
+• Penyajian: Sering disantap sebagai camilan maupun sebagai pendamping nasi dan olahan ikan nelayan.
+
+Sumber: Tuban Smart City`
+            },
+            {
+                nama: "Siwalan",
+                foto: ["siwalan.jpg", "buah-siwalan.jpg", "ental.jpg"],
+                teks: `Siwalan khas Tuban adalah buah tropis dari pohon lontar (Borassus flabellifer) yang tumbuh subur di wilayah pesisir utara dan perbukitan kapur Kabupaten Tuban, Jawa Timur. Buah ini telah lama menjadi ikon agrowisata sekaligus oleh-oleh wajib bagi para pelancong yang melintasi jalur pantura Tuban.
+
+Karakteristik & Cita Rasa
+Bentuk & Tekstur: Daging buah siwalan berbentuk bulat pipih, berwarna putih bening transparan, dan terbungkus dalam tempurung serat tebal. Teksturnya kenyal, lembut, serta berair (juicy) mirip kolang-kaling atau daging kelapa muda, namun dengan sensasi gigitan yang lebih padat.
+Rasa: Buah ini menyuguhkan rasa manis alami yang lembut dipadukan dengan kesegaran kadar air yang tinggi, sangat cocok dinikmati dingin saat cuaca terik.
+
+Sumber: Tugu jatim`
+            },
+            {
+                nama: "Rengginang Tuban",
+                foto: ["rengginang.jpg", "rengginang-tuban.jpg"],
+                teks: `Rengginang khas Tuban adalah salah satu camilan tradisional berupa kerupuk tebal dari butiran beras ketan yang tidak dihancurkan. Kudapan ini menjadi salah satu ikon oleh-oleh khas dari Kabupaten Tuban, Jawa Timur.
+
+Karakteristik Rengginang Khas Tuban
+• Bahan Baku Utama: Menggunakan beras ketan pilihan yang butirannya tetap utuh dan jelas terlihat.
+• Tekstur: Tebal, garing, dan sangat renyah saat digigit.
+• Proses Pengolahan: Ketan dikukus, dibumbui, dicetak bulat pipih, dijemur di bawah panas matahari hingga benar-benar kering, lalu digoreng menggunakan minyak panas.
+• Varian Rasa: Umumnya hadir dengan rasa gurih, terasi, bawang, serta rasa manis. Salah satu varian yang cukup diminati adalah rengginang rasa terasi yang khas, gurih, dan bebas gula.
+• Popularitas: Sering dijadikan camilan sehari-oleh maupun suguhan khas saat hari raya.
+
+Sumber: Lazada`
+            },
+            {
+                nama: "Cumi crispy",
+                foto: ["cumi-crispy.jpg", "cumi-crispy-tuban.jpg"],
+                teks: `Cumi crispy khas Tuban adalah salah satu produk olahan hasil laut yang populer sebagai camilan atau lauk kering khas dari Kabupaten Tuban, Jawa Timur.
+
+Karakteristik dan Deskripsi Utama:
+• Bahan Baku Segar: Diolah menggunakan cumi-cumi pilihan atau baby cumi yang didapat langsung dari para nelayan lokal di sepanjang pesisir Tuban.
+• Tekstur Renyah (Crispy): Dibalut dengan adonan tepung berbumbu khusus lalu digoreng kering hingga menghasilkan tekstur yang renyah (kriuk) di luar namun tetap lembut di bagian dalam.
+• Rasa Gurih Khas: Memiliki rasa gurih alami dari cita rasa seafood yang kuat tanpa menggunakan bahan pengawet berbahaya.
+• Varian Rasa: Tersedia dalam beberapa pilihan rasa, seperti rasa original yang gurih maupun varian pedas seperti balado.
+
+Sumber: Lazada.co.id`
+            },
+            {
+                nama: "Ikan asin",
+                foto: ["ikan-asin.jpg", "ikan-asin-tuban.jpg"],
+                teks: `Ikan asin Tuban adalah salah satu produk olahan hasil laut yang populer dijadikan oleh-oleh khas dari Kabupaten Tuban, Jawa Timur.
+
+Jenis Ikan Asin Populer
+• Jambal Roti: Dagingnya tebal, gurih, dan berukuran besar.
+• Bulu Ayam: Berukuran kecil, tipis, dan bertekstur renyah setelah digoreng.
+• Terang Bulan: Jenis ikan asin khas daerah pesisir Tuban yang banyak dicari wisatawan.
+• Tetet & Teri Nasi: Sering diolah menjadi lauk pendamping atau peyek.
+
+Sumber: Halodoc`
+            },
+            {
+                nama: "Kerupuk ikan Tengiri",
+                foto: ["kerupuk-tengiri.jpg", "kerupuk-ikan-tengiri.jpg"],
+                teks: `Kerupuk ikan tengiri khas Tuban, Jawa Timur—dengan merek terkenal seperti Cap Guci Toak—merupakan salah satu produk camilan dan oleh-oleh khas daerah pesisir utara.
+
+Berikut adalah deskripsi lengkap mengenai karakteristik dan keunggulannya:
+Karakteristik & Rasa
+• Aroma dan Rasa: Memiliki aroma khas ikan tengiri yang sangat kuat dan harum, dengan dominasi rasa gurih, sedap, dan kaya cita rasa ikan segar.
+• Tekstur: Renyah dan mekar sempurna setelah digoreng.
+• Bentuk: Umumnya berukuran potongan kecil yang pas untuk sekali makan (tersedia dalam kemasan praktis seperti 250 gram).
+
+Sumber: Shopee`
+            },
+            {
+                nama: "dodol",
+                // MENDUKUNG KEDUA NAMA: 'dodol-tuban.jpg' & 'dodol.jpg'
+                foto: ["dodol-tuban.jpg", "dodol.jpg", "dodol-tuban.jpeg", "dodol.png"],
+                teks: `Dodol atau jenang khas Tuban merupakan kudapan tradisional bertekstur lembut dengan cita rasa manis legit yang menjadi salah satu oleh-oleh wajib bagi para peziarah di kawasan Makam Sunan Bonang.
+
+Karakteristik Dodol / Jenang Khas Tuban
+• Bahan Baku: Terbuat dari campuran tepung ketan, santan kelapa, serta gula merah atau gula aren pilihan. Variasi lokal juga mencakup jenang siwalan yang memanfaatkan potensi buah khas daerah atau dodol buah dengan berbagai rasa.
+• Tekstur dan Rasa: Memiliki tekstur yang kenyal, lembut, empuk, dan rasa manis legit yang khas.
+• Kemasan Tradisional: Sering kali dikemas menggunakan pelepah jagung atau daun tradisional yang menambah keunikan tampilan produk.
+• Kaitan dengan Wisata Religi: Kudapan ini sangat populer dan selalu dicari oleh wisatawan serta peziarah, terutama saat momen-momen besar seperti tradisi haul Sunan Bonang.
+
+Sumber: Tokopedia`
+            },
+            {
+                nama: "Pepes belut",
+                foto: ["pepes-belut.jpg", "pes-pes-belut.jpg"],
+                teks: `Pepes belut khas Tuban—atau yang sering disebut oleh masyarakat lokal dengan nama pes-pes belut—adalah kuliner tradisional legendaris asal Tuban, Jawa Java Timur, yang terkenal dengan cita rasa sangat pedas, gurih, dan beraroma tajam.
+
+Kuliner ini lahir dari perpaduan geografis Tuban yang memiliki area persawahan luas (penghasil belut alam) serta budaya masyarakat pesisir yang gemar mengonsumsi makanan dengan bumbu rempah yang kuat dan berani.
+
+1. Karakteristik Rasa dan Tekstur
+• Pedas Menggigit: Berbeda dengan pepes daerah lain yang cenderung manis atau gurih sedang, pepes belut Tuban didominasi oleh rasa pedas yang sangat tajam karena penggunaan cabai rawit dalam jumlah besar.
+• Gurih Kaya Rempah: Paduan bawang, kemiri, dan bumbu pelengkap membalut daging belut dengan sempurna, menyamarkan bau amis alaminya.
+• Tekstur Daging Lembut: Belut dikukus bersama bumbu di dalam daun pisang hingga dagingnya menjadi sangat empuk
+
+Sumber: Primarasa`
+            },
+            {
+                nama: "Keripik talas",
+                foto: ["keripik-talas.jpg", "keripik-mbote.jpg"],
+                teks: `Keripik talas khas Tuban (sering disebut keripik mbote) merupakan salah satu produk camilan unggulan UMKM lokal yang dibuat dari umbi talas pilihan petani setempat dengan tekstur renyah, tipis, dan bebas pengawet buatan.
+
+Karakteristik & Varian Rasa
+• Bahan Baku: Menggunakan umbi talas lokal (mbote) yang diolah higienis untuk menghilangkan getah agar tidak gatal saat dikonsumsi.
+• Varian Rasa: Tersedia dalam berbagai pilihan rasa seperti original gurih, asin, balado, pedas, hingga sapi panggang.
+• Harga: Umumnya dijual mulai dari Rp13.000 hingga Rp14.800 per kemasan (bervariasi tergantung ukuran berat seperti 150g, 250g, hingga 500g).
+
+Sumber: Shopee`
+            },
+            {
+                nama: "Petis",
+                // MENDUKUNG KEDUA NAMA: 'petis-tuban.jpg' & 'petis.jpg'
+                foto: ["petis-tuban.jpg", "petis.jpg", "petis-tuban.jpeg", "petis.png"],
+                teks: `Petis khas Tuban adalah bumbu atau pasta pekat khas daerah pesisir utara Jawa Timur yang terbuat dari olahan sari hasil laut.
+
+Jenis-Jenis Petis Tuban
+Di daerah pesisir Tuban, terdapat dua jenis petis yang umum dijumpai:
+• Petis Udang: Dibuat dari sari atau sisa rebusan udang segar, menghasilkan warna yang gelap (hitam/cokelat pekat) dengan cita rasa yang gurih dan sedikit manis.
+• Petis Ikan: Dibuat dari sari atau sisa rebusan ikan laut, yang khas memiliki cita rasa lebih asin dibandingkan petis udang pada umumnya.
+
+Sumber: Lazada`
+            },
+            {
+                nama: "Keripik tempe",
+                foto: ["keripik-tempe.jpg", "kripik-tempe.jpg"],
+                teks: `Keripik atau kerupuk tempe khas Tuban adalah salah satu camilan dan produk oleh-oleh khas dari Kabupaten Tuban, Jawa Timur.
+
+Ciri-Ciri dan Deskripsi Produk
+• Bahan Baku Utama: Dibuat dari tempe kedelai pilihan dengan irisan yang tipis dan rapi.
+• Tekstur: Sangat renyah, garing, dan ringan (kriuk), tidak keras saat digigit.
+• Rasa: Memiliki rasa gurih khas kedelai fermentasi dipadu dengan bumbu rempah seperti bawang putih dan ketumbar.
+• Varian Rasa: Sejumlah produsen lokal di Tuban (seperti produk khas UMKM setempat) mengembangkannya dalam berbagai pilihan rasa, mulai dari original (asin gurih), balado, pedas, hingga pedas gila.
+
+Sumber: Tokopedia`
+            },
+            {
+                nama: "Mangut manyung",
+                // MENDUKUNG ANEKA VARIASI NAMA: 'mangut-manyung.jpg', 'mangut.jpg', dll.
+                foto: ["mangut-manyung.jpg", "mangut.jpg", "mangut-manyung.jpeg", "ndas-manyung.jpg", "mangut-manyung.png"],
+                teks: `Mangut manyung (sering juga diolah dengan sebutan Ndas Manyung atau Garang Asem Manyung) adalah salah satu kuliner khas pesisir Pantura yang sangat digemari di Kabupaten Tuban, Jawa Timur.
+
+Karakteristik Mangut Manyung Tuban
+• Bahan Utama: Menggunakan kepala ikan manyung berukuran besar (jumbo) atau bagian daging dan ekor ikan manyung yang telah melalui proses pengasapan (smoked fish). Ikan manyung sendiri memiliki tekstur daging yang tebal, padat, dan tidak mudah hancur.
+• Cita Rasa Kuah: Di Tuban, olahan manyung sering kali tidak hanya berupa kuah santan pedas (mangut yang kental dan medok), tetapi juga populer dengan variasi kuah yang segar, asam, dan pedas seperti gaya garang asem (menggunakan belimbing wuluh, tomat segar, serta cabai rawit utuh).
+• Aroma Khas: Proses pengasapan pada kepala ikan manyung memberikan aroma smoky (asap) yang kuat, yang sekaligus menghilangkan bau amis khas ikan laut.
+
+Sumber: Attin Food`
+            },
+            {
+                nama: "Keripik ikan laut",
+                foto: ["keripik-ikan.jpg", "keripik-ikan-laut.jpg"],
+                teks: `Kripik ikan laut khas Tuban adalah produk olahan hasil laut yang dibuat dari berbagai jenis ikan segar tangkapan nelayan lokal, berpadu dengan tepung dan bumbu rempah pilihan.
+
+Karakteristik dan Bahan
+• Bahan Dasar: Terbuat dari ikan laut kering atau segar seperti ikan teri, teri nasi, teri belah, bulu ayam, ikan layur, ikan bilis, kalapan, jambrong, hingga belut laut.
+• Komposisi Adonan: Umumnya menggunakan campuran tepung tapioka, tepung beras, bawang putih, rempah-rempah, serta tambahan garam dan gula.
+• Cita Rasa dan Tekstur: Memiliki rasa yang gurih, renyah, dan tidak menghilangkan aroma khas ikan segarnya.
+• Fungsi Penyajian: Dapat dinikmati langsung sebagai camilan atau dijadikan lauk pendamping saat makan nasi.
+
+Sumber: Instragram`
+            },
+            {
+                nama: "Pentol ikan petis",
+                foto: ["pentol-ikan-petis.jpg", "pentol-ikan.jpg"],
+                teks: `Pentol ikan petis adalah jajanan khas wilayah pesisir Tuban (terutama daerah Bulu, Bancar) yang memadukan pentol ikan segar dengan sambal petis khas.
+
+Ciri Khas Pentol Ikan Petis Tuban
+• Bahan Pentol: Terbuat dari campuran tepung terigu, tepung tapioka, daun bawang, bawang putih, dan daging ikan tongkol segar khas laut utara.
+• Sambal Petis: Dibuat dari petis ikan (seperti petis ikan tuna), cabai rawit, gula jawa (gula merah), dan perasan air asam jawa. Pembeli biasanya bisa memilih varian rasa petis, baik yang cenderung manis maupun asin/pedas.
+• Legenda Kuliner: Salah satu yang paling terkenal adalah Rujak Pentol Mak Kemis di Kecamatan Bancar (sekitar 40 km dari pusat Kota Tuban) yang selalu ramai pembeli.
+
+Sumber: cookpad.com`
+            }
+        ];
+
+        // FUNGSI LOAD FOTO PINTAR (MENCOBA SEMUA PILIHAN NAMA FILE)
+        function cobaMuatFoto(imgElement, daftarFoto, index = 0) {
+            if (index >= daftarFoto.length) {
+                // Jika semua opsi nama file lokal tidak ada, baru fallback ke gambar online
+                imgElement.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+                return;
+            }
+            imgElement.src = daftarFoto[index];
+            imgElement.onerror = function() {
+                cobaMuatFoto(imgElement, daftarFoto, index + 1);
+            };
+        }
+
+        // RENDER MAKSTUB
+        function renderMakstub(data) {
+            const container = document.getElementById('makstubList');
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 20px; color:#888;">Makanan tidak ditemukan.</div>`;
+                return;
+            }
+
+            data.forEach((item, idx) => {
+                const fotoList = Array.isArray(item.foto) ? item.foto : [item.foto];
+                const itemHTML = `
+                    <div class="gedog-item">
+                        <img id="img-makstub-${idx}" src="${fotoList[0]}" alt="${item.nama}" class="item-foto">
+                        <h4>${item.nama}</h4>
+                        <div class="item-teks-lengkap">${item.teks}</div>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+
+            // Jalankan deteksi fallback nama foto setelah elemen selesai dirender
+            data.forEach((item, idx) => {
+                const imgEl = document.getElementById(`img-makstub-${idx}`);
+                const fotoList = Array.isArray(item.foto) ? item.foto : [item.foto];
+                imgEl.onerror = function() {
+                    cobaMuatFoto(imgEl, fotoList, 1);
+                };
+            });
+        }
+        
+        // RENDER MINSTUB
+function renderMinstub(data) {
+    const container = document.getElementById('minstubList');
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 20px; color:#888;">Minuman tidak ditemukan.</div>`;
+        return;
+    }
+
+    data.forEach((item, idx) => {
+        const fotoList = Array.isArray(item.foto) ? item.foto : [item.foto];
+
+        const itemHTML = `
+            <div class="gedog-item">
+                <img id="img-minstub-${idx}" src="${fotoList[0]}" alt="${item.nama}" class="item-foto">
+                <h4>${item.nama}</h4>
+                <div class="item-teks-lengkap">${item.teks}</div>
+            </div>
+        `;
+
+        container.innerHTML += itemHTML;
+    });
+
+    data.forEach((item, idx) => {
+        const imgEl = document.getElementById(`img-minstub-${idx}`);
+        const fotoList = Array.isArray(item.foto) ? item.foto : [item.foto];
+
+        imgEl.onerror = function() {
+            cobaMuatFoto(imgEl, fotoList, 1);
+        };
+    });
+}
+
+// PENCARIAN REAL-TIME MINSTUB
+function cariMinstub() {
+    const input = document.getElementById('searchMinstub').value.toLowerCase();
+
+    const hasilFilter = daftarMinstub.filter(item =>
+        item.nama.toLowerCase().includes(input) ||
+        item.teks.toLowerCase().includes(input)
+    );
+
+    renderMinstub(hasilFilter);
+}        
+        
+
+        // PENCARIAN REAL-TIME MAKSTUB
+        function cariMakstub() {
+            const input = document.getElementById('searchMakstub').value.toLowerCase();
+            const hasilFilter = daftarMakstub.filter(item => 
+                item.nama.toLowerCase().includes(input) || 
+                item.teks.toLowerCase().includes(input)
+            );
+            renderMakstub(hasilFilter);
+        }
+        
+        //DATA MINUMAN KHAS TUBAN
+        const daftarMinstub = [
+    {
+        nama: "Es bubur sumsum",
+        foto: "m1.jpg",
+        teks: `Es bubur sumsum khas Tuban adalah hidangan tradisional perpaduan makanan dan minuman yang menyegarkan dengan tekstur yang lembut serta cita rasa manis-gurih.
+
+Karakteristik dan Komponen
+• Tekstur Lembut: Bubur sumsum terbuat dari tepung beras yang dimasak halus bersama santan dan daun pandan, memberikan sensasi lumer di mulut.
+• Aneka Isian (Bubur Campur): Di Tuban, penyajian es bubur sumsum sering dikombinasikan dengan berbagai isian tradisional lain seperti sagu mutiara, bubur kacang hijau, ketan hitam, serta buliran grendul atau candil.
+• Kuah Manis dan Gurih: Disiram dengan kuah santan kental yang gurih serta lelehan air gula merah (gula aren) yang harum, kemudian ditambah es batu agar terasa dingin dan segar saat cuaca panas.
+Sumber: Fimela.com`
+    },
+    {
+        nama: "Legen",
+        foto: "m2.jpg",
+        teks: `Legen adalah minuman tradisional khas Kabupaten Tuban, Jawa Timur, yang terbuat dari air sadapan bunga (manggar) pohon siwalan atau lontar (Borassus flabellifer).
+
+Ciri-Ciri Utama Legen Tuban
+• Asal Kata: Berasal dari kata "legi" dalam bahasa Jawa yang berarti manis.
+• Rasa dan Aroma: Memiliki perpaduan rasa manis alami yang khas, sedikit asam, dan sensasi segar yang mirip dengan air soda ringan.
+• Warna dan Tekstur: Warnanya agak keruh dengan sedikit buih alami.
+• Daya Tahan: Karena murni alami tanpa bahan pengawet, legen sangat cepat terfermentasi. Dalam waktu kurang dari 24 jam, rasanya akan berubah menjadi asam dan bisa berubah menjadi tuak (minuman beralkohol).
+• Sentra Produksi: Salah satu wilayah penghasil legen terbaik dan paling terkenal di Tuban berasal dari Kecamatan Semanding (seperti di Prunggahan Kulon dan Kowang).
+Sumber: Tuban Smart City`
+    },
+    {
+        nama: "Es Siwalan/ Es dawet Siwalan",
+        foto: "m3.jpg",
+        teks: `Es Siwalan khas Tuban adalah minuman segar tradisional yang memanfaatkan potongan daging buah siwalan (lontar) segar yang dipadukan dengan air gula atau kuah manis khas.
+Berbeda dengan es dawet yang menggunakan butiran cendol tepung beras, Es Siwalan murni menggunakan irisan buah siwalan sebagai isian utamanya tanpa tambahan cendol tepung.
+
+Karakteristik dan Komponen Utama
+• Isian Buah Siwalan: Daging buah siwalan (buah lontar muda) dipotong kotak-kotak kecil atau diiris tipis. Teksturnya kenyal, transparan, lembut, dan sedikit mirip kolang-kaling namun lebih empuk.
+• Pemanis Alami (Air Gula / Legen): Menggunakan pemanis berupa gula aren/gula merah cair, atau sering kali dipadukan langsung dengan air legen (nira siwalan) asli khas Tuban yang memberikan sensasi rasa manis, legit, dan aroma khas.
+• Kuah dan Pelengkap: Disajikan dengan campuran santan (atau terkadang diganti susu cair pada kreasi modern), es batu, dan kadang ditambah irisan buah 
+Sumber: detikcom`
+    },
+    {
+        nama: "Wedang ronde Tuban",
+        foto: "m4.jpg",
+        teks: `Wedang ronde khas Tuban adalah minuman tradisional hangat berisi bola-bola ketan kenyal (mochi) dengan isian kacang tanah tumbuk, yang disajikan bersama kuah jahe manis dan berbagai pelengkap seperti kolang-kaling, kacang sangrai, serta mutiara.
+
+Ciri Khas Wedang Ronde di Tuban
+• Komponen Isi: Terdiri dari pentol ronde (bola ketan isi kacang), mutiara, kolang-kaling, dan kacang goreng.
+• Kombinasi Kuliner Malam: Di Tuban, penjual wedang ronde sering dijajakan bersamaan atau berdampingan dengan kuliner malam hangat lainnya seperti angsle (kuah santan beraroma pandan) atau tauwa.
+Sumber: RRI`
+    },
+    {
+        nama: "Tuak Tuban",
+        foto: "m5.jpg",
+        teks: `Tuak khas Tuban (disebut juga toak) adalah minuman beralkohol tradisional yang dibuat dari hasil fermentasi air nira dari bunga pohon siwalan (lontar).
+
+Karakteristik dan Ciri Khas
+• Bahan Baku: Berasal dari getah nira bunga siwalan (wolo) yang ditampung menggunakan wadah bambu (bumbung) selama sehari semalam.
+• Tambahan Bahan: Sering kali dicampur dengan "babakan" (kulit kayu tertentu) untuk menambah rasa sepet serta meningkatkan kadar alkohol sebelum dan selama proses fermentasi.
+• Rasa dan Warna: Memiliki warna putih keruh seperti susu atau putih kecokelatan, dengan sensasi rasa pahit, agak masam, dan sepet.
+• Kadar Alkohol: Mengandung alkohol cukup tinggi dan dapat menyebabkan mabuk jika dikonsumsi berlebihan.
+• Cara Penyajian: Secara tradisional disajikan menggunakan centhak, yaitu gelas atau wadah kecil yang terbuat dari potongan bambu.
+Sumber: Rek Ayo Rek`
+    },
+    {
+        nama: "Wedang jahe khas pesisir",
+        foto: "m6.jpg",
+        teks: `Wedang Jahe Khas Pesisir Tuban adalah minuman hangat tradisional khas Kabupaten Tuban yang diracik khusus untuk menghalau angin laut malam yang dingin bagi masyarakat di sepanjang pesisir pantai.
+Berikut adalah deskripsi lengkap mengenai karakteristik unik dari minuman khas ini:
+🌟 Ciri Khas Utama
+• Jenis Jahe: Menggunakan racikan jahe emprit lokal. Jahe emprit dipilih karena memiliki ukuran rimpang yang lebih kecil namun menghasilkan rasa pedas yang lebih tajam dan aroma yang lebih kuat dibanding jahe gajah, sehingga sangat efektif untuk menghangatkan tubuh dengan cepat.
+• Pemanis Lokal: Dipadukan dengan gula aren lokal asli Tuban. Gula aren ini memberikan sentuhan rasa manis yang legit, gurih alami, dan warna kecokelatan yang pekat, berbeda dengan wedang jahe daerah lain yang terkadang menggunakan gula tebu biasa atau gula jawa jenis lain.
+Sumber: Alodokter`
+    },
+    {
+        nama: "Wedang sere",
+        foto: "m7.jpg",
+        teks: `Wedang Sere khas pesisir Tuban adalah minuman tradisional berbasis rempah yang memadukan serai (sereh), jahe, asam jawa, kunyit, dan gula merah. Di wilayah pesisir Tuban dan sekitarnya, varian wedang ini sering kali dikenal dengan nama lokal yang unik, yaitu Wedang Aserehe.
+Berikut adalah deskripsi lengkap mengenai karakteristik Wedang Sere khas pesisir Tuban:
+1. Profil Rasa dan Aroma
+Berbeda dengan wedang serai daerah lain yang cenderung manis-pedas murni, Wedang Sere pesisir Tuban memiliki kombinasi rasa yang sangat kaya: pedas, manis, sekaligus segar-asam.
+• Rasa Pedas dan Hangat: Dihasilkan dari jahe yang biasanya dibakar dan digeprek terlebih dahulu.
+• Rasa Segar-Asam: Berasal dari penggunaan asam jawa yang memberikan sensasi menyegarkan di tenggorokan, sangat cocok dengan kultur kuliner pesisir yang gemar memadukan rasa kuat.
+• Rasa Manis Gurih: Menggunakan gula merah (gula aren/jawa) yang menghasilkan rasa manis legit alami yang lembut.
+Sumber: Kompas.com`
+    },
+    {
+        nama: "Wedang Gombloh",
+        foto: "m8.jpg",
+        teks: `Wedang Gombloh adalah salah satu minuman tradisional khas dari Kabupaten Tuban, Jawa Timur. Minuman herbal berbasis rempah ini dikenal memiliki khasiat menghangatkan tubuh dan menjaga daya tahan tubuh, terutama saat cuaca dingin.
+Berikut adalah deskripsi profil dan karakteristik dari Wedang Gombloh Tuban:
+1. Komposisi Bahan Utama
+Wedang Gombloh terbuat dari kombinasi bahan-bahan alami dan kaya rempah, di antaranya:
+• Daun Jeruk Segar: Menjadi bahan utama pembentuk aroma segar yang dominan pada minuman ini.
+• Rempah-rempah Pendukung: Menggunakan tanaman herbal nusantara untuk memberikan cita rasa hangat di tubuh.
+• Pemanis Alami: Air rebusan rempah dipadukan dengan larutan gula (biasanya gula merah atau gula pasir) untuk menyeimbangkan rasa.
+Sumber: cookpad.com`
+    },
+    {
+        nama: "Dawet geplak ayu",
+        foto: "m9.jpg",
+        teks: `Dawet Geplak Ayu adalah salah satu kuliner minuman tradisional khas dari Kabupaten Tuban, Jawa Timur.
+
+Karakteristik dan Komposisi
+• Cendol Dawet: Terbuat dari tepung beras atau tepung sagu murni dengan pewarna alami dari perasan daun pandan wangi.
+• Isian Khas (Buah Siwalan): Berbeda dengan dawet dari daerah lain, isian utamanya dipadukan atau ditambahkan irisan daging buah siwalan (ental) khas Tuban yang kenyal, lembut, dan dingin alami.
+• Pemanis (Gula Aren / Legen): Menggunakan gula kelapa atau gula aren cair yang legit, serta terkadang dipadukan dengan sentuhan rasa manis dari air nira legen khas Tuban.
+• Santan: Disiram dengan santan kelapa segar yang gurih untuk menyeimbangkan rasa manis.
+Sumber: Doyan Ayam!`
+    },
+    {
+        nama: "Beras kencur",
+        foto: "m10.jpg",
+        teks: `Beras kencur khas Tuban pada dasarnya merupakan minuman tradisional berupa jamu atau penyegar tubuh yang juga populer disajikan sebagai es beras kencur di berbagai rumah makan khas Tuban (seperti di Kuliner Tuban Rajungan NDOROBEI, Faleeha Seafood, dan Warung Apung Rahmawati).
+
+Karakteristik dan Komposisi
+• Bahan Utama: Terbuat dari perpaduan rimpang kencur segar dan rendaman beras yang dihaluskan bersama.
+• Rempah Tambahan: Umumnya dicampur dengan jahe, daun pandan, gula merah (gula jawa/aren), sedikit garam, dan terkadang asam jawa untuk memperkaya rasa.
+• Cita Rasa: Memiliki perpaduan rasa manis dari gula merah, sensasi hangat serta sedikit pedas khas jahe dan kencur, serta tekstur pekat dari endapan sari beras.
+• Penyajian: Sangat populer dinikmati dalam kondisi dingin (es beras kencur) yang terasa segar, terutama saat menyantap kuliner khas Tuban yang bercita rasa pedas dan kaya rempah (seperti becek mentok atau olahan rajungan).
+Sumber: RRI`
+    },
+    {
+        nama: "Kunyit asem",
+        foto: "m11.jpg",
+        teks: `Kunyit asem khas Tuban adalah minuman tradisional berupa jamu yang diolah secara rumahan maupun semi-modern oleh masyarakat lokal, seperti di wilayah Tuban Kota dan Semanding. Minuman ini memadukan kekayaan rempah lokal dengan cita rasa segar yang khas.
+
+Karakteristik dan Komposisi
+• Bahan Utama: Menggunakan rimpang kunyit segar pilihan dan buah asam jawa matang.
+• Pemanis Alami: Umumnya menggunakan 100% gula asli, gula merah, atau gula aren lokal tanpa pemanis buatan.
+• Rasa: Perpaduan rasa asam yang segar, sentuhan hangat dan khas dari kunyit, serta manis legit dari gula aren.
+• Pengemasan: Banyak dijual dalam kemasan botol siap minum (ukuran sekitar 500 ml) yang diproduksi harian tanpa bahan pengawet.
+Sumber: RRI`
+    }
+];
+
+//DAFTAR WISATA TUBAN
+
+const daftarWistub = [
+    {
+        nama: "Pantai Kelapa Tuban",
+        foto: "w1.jpg",
+        teks: `Pantai Kelapa Tuban adalah salah satu destinasi wisata alam andalan di Kabupaten Tuban, Jawa Timur, yang menawarkan pesona pesisir utara dengan suasana tropis yang unik dan teduh. Berbeda dengan pantai utara pada umumnya yang cenderung gersang dan panas, pantai ini justru sangat rindang karena dikelilingi oleh ribuan pohon kelapa yang tumbuh subur dan berjajar rapi di sepanjang garis pantai seluas 6 hektare. Berlokasi strategis di Jl. Raya Gresik KM 1-2, Kecamatan Palang—hanya sekitar 15 menit dari pusat Kota Tuban—pantai ini menyuguhkan pemandangan laut utara yang tenang dengan hamparan pasir luas serta perahu-perahu nelayan tradisional yang bersandar estetis di tepiannya. Pantai Kelapa tidak hanya menjadi tempat berburu sunrise dan foto yang instagramable, tetapi juga telah menjelma menjadi pusat rekreasi keluarga yang lengkap. Wisatawan dapat menikmati ragam aktivitas seru seperti berkuda menyusuri pantai, bermain ATV Bike, meluncur dengan flying fox, menyewa perahu, hingga berenang di kolam renang yang menghadap langsung ke laut lepas. Didukung dengan harga tiket masuk yang sangat terjangkau sebesar Rp10.000 per orang dan jam operasional setiap hari dari pukul 08:00 hingga 17:00 WIB, pantai ini sudah dilengkapi fasilitas penunjang yang memadai seperti area camping, gazebo, mushola, toilet, serta deretan warung kuliner yang siap memanjakan lidah pengunjung dengan kesegaran es degan langsung dari pohonnya.
+
+Sumber : https://www.pantaikelapa.com`
+    },
+
+    {
+        nama: "Pantai Boom",
+        foto: "w2.jpg",
+        teks: `Pantai Boom adalah destinasi wisata bahari dan sejarah yang terletak di Kelurahan Kutorejo, tepat di sebelah utara Alun-Alun Kota Tuban, Jawa Timur.
+
+Berikut adalah ringkasan singkat mengenai Pantai Boom Tuban:
+• Lokasi Strategis: Berada di pusat kota dan sangat dekat dari Alun-Alun Tuban sehingga mudah diakses.
+• Nilai Sejarah: Kawasan ini dulunya merupakan pelabuhan utama yang penting pada era Kerajaan Singasari dan Majapahit. Di area pantai, terdapat relief sejarah yang menceritakan kisah perjuangan Adipati Ronggolawe.
+• Daya Tarik Utama: Memiliki dermaga panjang menjorok ke laut sekitar 800 meter, area tepi pantai berbatuan, pohon cemara yang rindang, serta pemandangan matahari terbit (sunrise) dan terbenam (sunset).
+• Fasilitas: Tersedia gazebo, area pancing, taman bermain anak, warung kuliner, hingga penyewaan perahu.
+• Jam Buka & Harga Tiket: Buka setiap hari mulai pukul 06.00 hingga 18.00 WIB. Harga tiket masuk sangat terjangkau, yaitu Rp6.000 pada hari biasa (weekday) dan Rp8.000 pada akhir pekan (weekend).
+
+Sumber : https://tubankab.go.id/entry/pantai-boom-tuban-1`
+    },
+
+    {
+        nama: "Goa Akbar Tuban",
+        foto: "w3.jpg",
+        teks: `Goa Akbar Tuban adalah objek wisata alam dan religi berupa goa purba yang terletak di tengah Kota Tuban, tepatnya di Desa Gedongombo, Kecamatan Semanding, Jawa Timur.
+
+Daya Tarik Utama
+• Keindahan Alam Bawah Tanah: Goa ini memiliki panjang lorong sekitar 1,2 kilometer yang dihiasi oleh ornamen stalaktit dan stalagmit aktif meneteskan air. Di dalamnya juga terdapat aliran sungai bawah tanah dan fosil kerang purba.
+• Sejarah dan Religi: Dulu goa ini bernama Luweng Ombo dan konon menjadi tempat persinggahan atau pertapaan Sunan Kalijaga (Berandal Lokajaya) serta tempat berkumpulnya para Wali Songo. Nama "Akbar" sendiri berasal dari kekaguman Sunan Bonang saat mengucapkan "Allahu Akbar" ketika pertama kali menemukan goa ini.
+• Fasilitas Wisata: Pengelola telah menyediakan jalur penelusuran yang aman, lampu penerangan warna-warni, serta papan petunjuk arah yang jelas bagi wisatawan.
+
+Sumber : https://id.wikipedia.org/wiki/Gua_Akbar`
+    },
+
+    {
+        nama: "Goa Ngerong",
+        foto: "w4.jpg",
+        teks: `Goa Ngerong adalah destinasi wisata alam dan mata air yang terletak di Desa Rengel, Kecamatan Rengel, Kabupaten Tuban, Jawa Timur. Tempat ini berada di kaki bukit pegunungan kapur dan terkenal dengan keindahan mata air jernih, populasi kelelawar, serta ribuan ikan [bader dan nila] yang dikeramatkan oleh warga.
+
+Daya Tarik dan Keunikan
+• Ribuan Ikan Keramat: Sungai di dalam kawasan goa dihuni oleh ribuan ikan air tawar. Pengunjung bisa memberi makan ikan-ikan ini dengan membeli biji kapas atau pakan yang dijual di sekitar lokasi.
+• Mitos dan Pantangan: Terdapat kepercayaan kuat di masyarakat bahwa mengambil atau memakan ikan dan hewan dari sungai goa ini dapat mendatangkan malapetaka atau musibah. Hal ini membuat populasi ikan tetap terjaga.
+• Habitat Kelelawar: Goa ini merupakan rumah bagi ribuan kelelawar yang bergelantungan di dinding-dinding bagian dalam goa.
+• Wisata Air: Airnya yang jernih dan kebiruan sering dimanfaatkan pengunjung untuk berendam, bermain air, atau terapi relaksasi bersama ikan-ikan.
+
+Lokasi dan Informasi Kunjungan
+• Alamat: Jalan Raya Rengel Nomor 155, Desa Rengel, Kecamatan Rengel, Kabupaten Tuban, Jawa Timur.
+• Tiket Masuk: Berkisar antara Rp3.000 hingga Rp7.000 per orang [tergantung hari dan ketentuan pengelola lokal].
+• Fasilitas: Tersedia area parkir, warung makan, tempat duduk santai dari bambu, penyewaan pelampung, serta toilet.
+
+Sumber : https://iainutuban.ac.id/2024/01/20/sejarah-goa-ngerong-di-rengel/`
+    },
+
+    {
+        nama: "Makam Sunan Bonang",
+        foto: "w5.jpg",
+        teks: `Makam Sunan Bonang di Kabupaten Tuban adalah salah satu pusat wisata religi dan sejarah Islam paling populer di Pulau Jawa.
+
+Informasi Singkat
+• Lokasi: Kelurahan Kutorejo, Kecamatan Tuban, persis di sebelah barat Masjid Agung Tuban dan dekat Alun-alun Tuban.
+• Tokoh: Sunan Bonang atau Raden Makdum Ibrahim, seorang wali dari kelompok Wali Songo yang wafat pada tahun 1525 M. Beliau adalah putra dari Sunan Ampel.
+• Daya Tarik: Kompleks makam memiliki arsitektur khas berupa pendopo semi-terbuka berlantai marmer,gapura kuno, serta Sumur Qur'an.
+• Tiket Masuk: Gratis (hanya perlu membayar biaya parkir kendaraan).
+• Jam Buka: Setiap hari selama 24 jam.
+
+Keunikan dan Dakwah
+• Media Seni: Sunan Bonang berdakwah menggunakan pendekatan budaya, seperti menciptakan alat musik gamelan bonang serta tembhang religi terkenal berjudul Tombo Ati.
+• Tujuan Peziarah: Tempat ini ramai dikunjungi peziarah dari berbagai daerah, terutama menjelang bulan suci Ramadhan atau hari besar Islam, untuk berdoa dan mengenang sejarah penyebaran agama Islam.
+
+Sumber : https://www.detik.com/jatim/wisata/d-7322087/daya-tarik-wisata-religi-makam-sunan-bonang-tuban`
+    },
+
+    {
+        nama: "Klenteng Kwan Sing Bio",
+        foto: "w6.jpg",
+        teks: `Klenteng Kwan Sing Bio yang terletak di Jalan Raya R.E. Martadinata No. 1, Karangsari, Kota Tuban, Jawa Timur, merupakan salah satu destinasi wisata religi paling ikonik di Indonesia. Didirikan sekitar tahun 1773, tempat ibadah bagi umat Tri Dharma (Buddha, Tao, dan Konghucu) ini dibangun di atas lahan megah seluas 4 hingga 5 hektare, menjadikannya dinobatkan sebagai salah satu klenteng terbesar di Asia Tenggara.
+
+Berikut beberapa keunikan utama dari Klenteng Kwan Sing Bio Tuban:
+• Satu-satunya yang Menghadap Laut: Klenteng ini memiliki tata letak yang unik karena dibangun tepat di tepi jalur Pantura dan langsung menghadap ke pesisir Laut Jawa.
+• Gerbang Kepiting Raksasa: Berbeda dari kebanyakan klenteng yang menggunakan simbol naga pada pintu masuknya, gerbang utama klenteng ini dihiasi oleh patung kepiting raksasa. Simbol ini terinspirasi dari sejarah area klenteng yang dulunya merupakan kawasan tambak penghasil kepiting.
+• Pemujaan Dewa Kwan Kong: Dewa utama yang dipuja di sini adalah Dewa Kwan Sing Tee Koen (Dewa Kwan Kong), yang melambangkan kesetiaan, keadilan, dan kejujuran.
+• Fasilitas Wisata & Budaya: Kompleks ini memiliki berbagai bangunan megah bernuansa Tionghoa berhiaskan lampion, jembatan berlekuk sembilan khas Tiongkok, hingga penginapan bagi para peziarah yang datang dari dalam maupun luar negeri.
+
+Setiap perayaan besar seperti Imlek atau hari ulang tahun dewa utama, klenteng ini selalu dipadati oleh ribuan wisatawan untuk menyaksikan berbagai festival budaya seperti pertunjukan barongsai dan kembang api.
+
+Sumber : https://www.traveloka.com/id-id/explore/activities/klenteng-tuban-jawa-timur-ta/554703`
+    },
+
+    {
+        nama: "Air Terjun Putri Nglirip",
+        foto: "w7.jpg",
+        teks: `Air Terjun Putri Nglirip adalah destinasi wisata alam andalan di Kabupaten Tuban, Jawa Timur, yang terkenal dengan airnya yang jernih dan berwarna hijau toska.
+
+Lokasi dan Rute
+• Tempat ini terletak di Dusun Jojogan, Desa Mulyoagung, Kecamatan Singgahan, Kabupaten Tuban.
+• Jaraknya sekitar 37 kilometer dari pusat kota Tuban ke arah barat daya.
+
+Keindahan Alam
+• Air terjun ini memiliki ketinggian sekitar 23 hingga 30 meter.
+• Airnya bersumber dari Hutan Lindung Krawak.
+• Suasana di sekitar sangat asri dan sejuk karena dikelilingi oleh pepohonan yang rindang.
+• Air kolam di bawahnya terlihat sangat segar dengan nuansa warna biru kehijauan atau hijau toska, terutama saat musim kemarau.
+
+Daya Tarik dan Mitos
+• Pengunjung bisa menikmati keindahan alam sambil bermain air yang segar di alam bebas.
+• Terdapat legenda lokal tentang seorang putri bernama Putri Nglirip yang berkaitan dengan sejarah tempat ini.
+• Di sekitar kawasan ini juga terdapat makam religi Syekh Abdul Jabbar.
+• Wisatawan dapat mencicipi kuliner khas setempat di dekat lokasi, seperti rujak betis.
+
+Sumber : https://indonesiakaya.com/pustaka-indonesia/mengagumi-keindahan-air-terjun-nglirip-di-tuban/`
+    },
+
+    {
+        nama: "Pemandian Alam Bektiharjo",
+        foto: "w8.jpg",
+        teks: `Pemandian Alam Bektiharjo adalah objek wisata pemandian legendaris berbalut sumber mata air alami yang terletak di Desa Bektiharjo, Kecamatan Semanding, Kabupaten Tuban, sekitar 5 km dari pusat kota Tuban.
+
+Daya Tarik Utama
+• Sumber Mata Air Alami: Memiliki air yang sangat jernih, sejuk, dan terus mengalir dari sendang (mata air) purba yang dikelilingi pohon-pohon besar.
+• Sejarah Panjang: Tempat ini sudah ada sejak abad ke-13 dan dahulu dibuat oleh Raden Danur Wendo sebagai sumber air minum.
+• Kehadiran Kera Liar: Kawasan sekitar pemandian dihuni oleh sekumpulan kera jinak yang menjadi ciri khas tersendiri bagi pengunjung.
+• Tradisi Manganan: Warga dari lima desa sekitar rutin menggelar tradisi sedekah bumi atau Manganan di area sendang sebagai wujud syukur atas limpahan air.
+
+Informasi Kunjungan
+• Jam Buka: Pukul 07.00 – 17.00 WIB setiap hari.
+• Harga Tiket Masuk:
+    • Senin – Jumat: Rp8.000 (dewasa) dan Rp5.000 (anak-anak).
+    • Sabtu, Minggu, & Libur Nasional: Rp10.000 (dewasa) dan Rp6.000 (anak-anak).
+• Fasilitas: Area parkir, warung makan, gazebo, toilet, tempat ibadah, serta kolam renang anak dan dewasa.
+
+Sumber : https://sidita.disbudpar.jatimprov.go.id/destinasi/detail/f8c742b832f4366b4e9e23eb55f6abd7874f1ac9f33234e7b881c7606e1ccca8753ed13e69b550e7f34fd6b8c76668a8d36f07b7d7a10d57efc0b9907d9c4243`
+    },
+
+    {
+        nama: "Agrowisata Belimbing Tasikmadu",
+        foto: "w9.jpg",
+        teks: `Agrowisata Belimbing Tasikmadu di Kabupaten Tuban adalah kawasan sentra perkebunan buah belimbing unggulan di mana pengunjung dapat menikmati pengalaman memetik buah segar langsung dari pohonnya.
+
+Daya Tarik Utama
+• Wisata Petik Buah: Pengunjung bisa masuk ke area perkebunan dan memetik sendiri buah belimbing yang matang dan segar.
+• Kualitas Unggulan: Belimbing Tasikmadu terkenal berukuran besar, berwarna cerah, dan memiliki rasa yang sangat manis seperti madu bahkan saat buahnya masih muda.
+• Wisata Edukasi: Tempat ini sering dimanfaatkan sebagai sarana belajar budidaya tanaman hortikultura, khususnya perawatan dan pengembangan varietas belimbing lokal berkualitas tinggi.
+
+Lokasi
+• Alamat: Desa Tasikmadu, Kecamatan Palang, Kabupaten Tuban, Jawa Timur.
+• Kawasan: Menjadi bagian dari wilayah agropolitan yang dikelola secara produktif dan ditetapkan sebagai salah satu produk hortikultura andalan nasional.
+
+Sumber :https://tubankab.go.id/entry/belimbing-tasikmadu-masuk-produk-unggulan-nasional`
+    },
+
+    {
+        nama: "Museum Kambang Putih",
+        foto: "w10.jpg",
+        teks: `Museum Kambang Putih adalah satu-satunya museum resmi di Kabupaten Tuban yang menyimpan ribuan benda bersejarah, arkeologi, dan budaya lokal.
+
+Lokasi dan Sejarah Singkat
+• Alamat: Jalan R.A. Kartini No. 3, Kelurahan Kutorejo, Kecamatan Tuban, Jawa Timur.
+• Letak Strategis: Berada di pusat kota, tepatnya di sebelah barat Kantor Bupati Tuban, dekat Alun-Alun Tuban, Pantai Boom, dan kompleks makam Sunan Bonang.
+• Peresmian: Pertama kali diresmikan pada 25 Agustus 1984 di kompleks Pendopo Krido Manunggal, lalu dipindahkan ke lokasi saat ini dan diresmikan ulang oleh Gubernur Jawa Timur Basofi Soedirman pada 15 Januari 1996.
+
+Koleksi Utama
+• Jumlah Koleksi: Menyimpan lebih dari 5.700 item benda bersejarah.
+• Ragam Barang: Arca kuno peninggalan era Majapahit, fosil purbakala (seperti fosil badak purba), alat-alat maritim dari Pantai Boom, uang kuno abad ke-19 hingga ke-20, serta perlengkapan nelayan tradisional.
+• Asal Nama: Istilah "Kambang Putih" diambil dari prasasti Raja Sri Mapanji Garasakan tahun 1050 Masehi yang menandai Tuban sebagai kawasan pelabuhan penting.
+
+Sumber : https://tubankab.go.id/entry/museum-kambang-putih`
+    },
+
+    {
+        nama: "Masjid Aschabul Kahfi Perut Bumi Al-Maghribi",
+        foto: "w11.jpg",
+        teks: `Masjid Aschabul Kahfi Perut Bumi Al-Maghribi adalah destinasi wisata religi unik di Tuban yang terletak sekitar 20 meter di bawah permukaan tanah di dalam gua alami.
+
+Daya Tarik Utama
+• Lokasi Bawah Tanah: Berada di dalam gua dengan kedalaman 20 meter di bawah tanah di Kelurahan Gedongombo, Kecamatan Semanding.
+• Arsitektur Unik: Memadukan nuansa negeri dongeng 1001 Malam, ornamen kaligrafi Arab-Jawa, serta pilar marmer di antara stalaktit dan stalagmit alami.
+• Sejarah Tempat: Didirikan pada tahun 2002 oleh K.H. Subhan Mubarok di atas lahan yang sebelumnya merupakan tempat pembuangan sampah.
+
+Informasi Kunjungan
+• Tiket Masuk: Gratis, pengunjung umumnya hanya perlu membayar biaya parkir kendaraan dan beramal seikhlasnya.
+• Aktivitas: Tempat peziarah berdoa, berwisata religi, melihat pondok pesantren, dan berfoto.
+
+Sumber : https://www.youtube.com/watch?v=zALoJE1WC3c&t=4`
+    }
+];
+
+const daftarKastub = [
+  {
+    nama: "Sandur",
+    foto: "k1.jpg",
+    teks: `Sandur adalah seni pertunjukan teater tradisional kerakyatan dan drama tari agraris asal Kabupaten Tuban dan Bojonegoro yang lahir dari tradisi syukur masyarakat petani.
+
+Karakteristik Utama
+• Asal & Fungsi: Berakar dari ritual bersih desa atau sedekah bumi setelah musim panen. Kesenian ini berfungsi sebagai hiburan, pemelihara kebersamaan, dan sarana kritik sosial.
+• Pementasan: Digelar di tanah lapang pada malam hari (biasanya pukul 21.00 hingga 03.00 WIB) dalam arena berbentuk lingkaran berukuran 8x8 meter yang disebut Blabar Janur Kuning.
+• Tokoh Utama: Dimainkan oleh empat orang anak laki-laki yang belum dikhitan, yaitu tokoh Balong, Pethak, Cawik, dan Tangsil, serta atraksi puncak Kalongking di atas bambu tinggi.
+• Status: Telah ditetapkan sebagai Warisan Budaya Takbenda Indonesia pada tahun 2018.
+
+Sumber: https://kabartuban.com/sejarah-kesenian-sandur-dari-kota-tuban/33505`
+  },
+  {
+    nama: "Kentrung",
+    foto: "k2.jpg",
+    teks: `Kentrung adalah seni sastra lisan atau seni bertutur tradisional khas masyarakat pesisir utara Jawa, termasuk di Kabupaten Tuban yang dikenal dengan varian lokal bernama Kentrung Bate.
+
+Karakteristik Utama
+• Seni Bertutur: Pertunjukan berupa cerita lisan atau storytelling yang dibawakan oleh seorang seniman sambil menyampaikan pesan moral, sejarah, atau keagamaan.
+• Iringan Musik: Menggunakan alat musik sederhana seperti instrumen timlung (kentheng) serta dua buah terbang besar atau rebana.
+• Lakon Cerita: Membawakan berbagai kisah klasik dan legenda, seperti kisah Anglingdarma, Mursodo Maling, hingga cerita-cerita nabi.
+
+Sejarah dan Perkembangan di Tuban
+• Media Dakwah: Di Tuban, khususnya melalui Kentrung Bate dari Desa Bate, Kecamatan Bangilan, kesenian ini dipopulerkan oleh Kiai Basiman pada tahun 1930-an sebagai sarana syiar Islam.
+• Kondisi Saat Ini: Kesenian tradisional ini kini menghadapi tantangan besar karena minimnya regenerasi dan usia para pemain yang sudah lanjut.
+
+Sumber: https://id.wikipedia.org/wiki/Kentrung`
+  },
+  {
+    nama: "Wayang Krucil Tuban",
+    foto: "k3.jpg",
+    teks: `Wayang Krucil Tuban adalah seni pertunjukan tradisional berupa boneka pipih dua dimensi dari kayu yang telah ditetapkan sebagai Warisan Budaya Takbenda (WBTb).
+
+Ciri Khas dan Bentuk
+• Bahan dan Bentuk: Terbuat dari ukiran kayu (seperti kayu pule atau mentaos) dengan ketebalan tipis, sementara bagian lengannya terbuat dari kulit agar mudah digerakkan oleh dalang. Ukurannya relatif kecil (sekitar 30 cm).
+• Tanpa Kelir: Tidak menggunakan layar kain (kelir) atau batang pohon pisang (gedebog), melainkan ditancapkan pada bilah kayu atau bambu berlubang yang disebut slanggan.
+• Musik Pengiring: Diiringi seperangkat gamelan laras slendro sederhana serta tembang macapat yang dilantunkan langsung oleh dalang.
+
+Cerita dan Perkembangan
+• Lakon Cerita: Membawakan cerita rakyat, epos Panji, kisah Menak, hingga Babad Majapahit yang dekat dengan sejarah dan kearifan lokal masyarakat agraris pesisir utara Jawa.
+• Status Konservasi: Kesenian ini tumbuh subur di daerah seperti Kecamatan Kerek, Tuban, namun kini kondisinya semakin langka dan mulai terpencil seiring perkembangan zaman.
+
+Sumber: https://www.youtube.com/watch?v=RGlMN9k7BB4`
+  },
+  {
+    nama: "Kesenian Tayub Tuban",
+    foto: "k4.jpg",
+    teks: `Kesenian Tayub Tuban adalah seni pertunjukan tradisional berupa tari berpasangan antara penari wanita dan laki-laki yang diiringi alunan musik gamelan dan sangat populer di Kabupaten Tuban.
+
+Karakteristik dan Pelaksanaan
+• Gerakan Tari: Penari wanita utama (disebut ledhek atau tledek) menarikan gerakan anggun sambil mengenakan selendang (sampur).
+• Interaksi: Penari wanita akan melingkarkan selendangnya ke leher atau pinggang penari pria dari kalangan penonton sebagai tanda mengajak menari bersama.
+• Waktu Pentas: Dahulu sering diadakan malam hari hingga dini hari pada acara hajatan warga.
+
+Fungsi dan Makna
+• Ungkapan Syukur: Digelar sebagai bentuk rasa syukur atas limpahan hasil panen atau rezeki dari Tuhan.
+• Tradisi Adat: Sering ditampilkan dalam acara bersih desa, pernikahan, khitanan, hingga nadar atau hajat tertentu.
+• Identitas Lokal: Menjadi bagian dari kearifan lokal dan identitas budaya masyarakat Tuban yang terus dijaga kelestariannya di tengah zaman modern.
+
+Sumber: https://versilama.budaya-indonesia.org/tayub`
+  },
+  {
+    nama: "Seni Thak-thak'an",
+    foto: "k5.jpg",
+    teks: `Seni Thak-thak'an adalah kesenian tradisional berupa tari kerakyatan mirip barongan yang berasal dari Kabupaten Tuban, terutama berkembang di wilayah pesisir seperti Kecamatan Tambakboyo.
+
+Karakteristik Utama
+• Asal Nama: Nama "thak-thak'an" diambil dari bunyi "thak-thak" yang bersumber dari benturan rahang atas dan bawah pada topeng kayu penarinya.
+• Bentuk Pertunjukan: Penari mengenakan topeng besar berbentuk makhluk atau hewan tertentu, diiringi alunan musik tradisional, dengan gerakan tari yang dinamis dan ekspresif.
+• Makna & Tradisi: Dahulu, masyarakat mempercayai pementasan Seni Thak-Thak'an Tambakboyo sebagai sarana ritual tolak bala, meruwat desa, atau mengusir gangguan roh halus.
+• Perkembangan: Saat ini, Kesenian Thak-Thakan tidak hanya menjadi bagian dari tradisi sedekah bumi, tetapi juga mulai sering diangkat dalam berbagai festival budaya regional hingga nasional.
+
+Sumber: https://iainutuban.ac.id/2025/12/31/seni-thak-thakan-tambakboyo-warisan-leluhur-spirit-tolak-bala-dan-kreativitas-generasi-baru/`
+  }
+];
+
+// RENDER WISTUB
+function renderWistub(data) {
+    const container = document.getElementById('wistubList');
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:20px; color:#888;">
+                Wisata tidak ditemukan.
+            </div>
+        `;
+        return;
+    }
+
+    data.forEach((item, idx) => {
+        const itemHTML = `
+            <div class="gedog-item">
+                <img
+                    id="img-wistub-${idx}"
+                    src="${item.foto}"
+                    alt="${item.nama}"
+                    class="item-foto"
+                >
+
+                <h4>${item.nama}</h4>
+
+                <div class="item-teks-lengkap">
+                    ${item.teks}
+                </div>
+            </div>
+        `;
+
+        container.innerHTML += itemHTML;
+    });
+}
+
+function renderKastub(data = daftarKastub) {
+  const container = document.getElementById("kastubList");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  data.forEach((item, idx) => {
+    const card = document.createElement("div");
+    card.className = "gedog-item";
+
+    const img = document.createElement("img");
+    img.className = "item-foto";
+    img.alt = item.nama;
+    img.src = item.foto;
+    img.onerror = function () {
+      this.style.display = "none";
+    };
+
+    const judul = document.createElement("h4");
+    judul.textContent = item.nama;
+
+    const teks = document.createElement("div");
+    teks.className = "item-teks-lengkap";
+    teks.textContent = item.teks;
+    teks.style.whiteSpace = "pre-line";
+    teks.style.lineHeight = "1.8";
+    teks.style.textAlign = "left";
+    teks.style.overflowWrap = "anywhere";
+
+    card.appendChild(img);
+    card.appendChild(judul);
+    card.appendChild(teks);
+    container.appendChild(card);
+  });
+}
+
+        // --- SISTEM AKUMULASI POIN BUDAYA ---
+        let totalPoinUser = 0;
+
+        function tambahPoin(nilai) {
+            totalPoinUser += nilai;
+            document.getElementById('total-poin-display').innerText = totalPoinUser;
+        }
+
+        // --- SISTEM NAVIGASI LOBI MINI GAME ---
+        function pilihGame(namaGame) {
+            document.getElementById('game-lobby').classList.add('hidden');
+
+            if (namaGame === 'puzzle') {
+                document.getElementById('subgame-puzzle').classList.remove('hidden');
+                inisialisasiPuzzle();
+            } else if (namaGame === 'kuis') {
+                document.getElementById('subgame-kuis').classList.remove('hidden');
+                mulaiMiniGame();
+            }
+        }
+
+        function kembaliKeLobbyGame() {
+            document.getElementById('subgame-puzzle').classList.add('hidden');
+            document.getElementById('subgame-kuis').classList.add('hidden');
+            document.getElementById('game-lobby').classList.remove('hidden');
+        }
+
+        // --- SISTEM PUZZLE 3x5 ---
+        let gambarBatikPuzzle = "batik-puzzle.jpg";
+
+        const testerBatikLokal = new Image();
+        testerBatikLokal.src = "batik-puzzle.jpg";
+        testerBatikLokal.onerror = function() {
+            if (gambarBatikPuzzle === "batik-puzzle.jpg") {
+                gambarBatikPuzzle = "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80";
+                renderPapanPuzzle();
+            }
+        };
+
+        function gantiFotoDariGaleri(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    gambarBatikPuzzle = e.target.result;
+                    const previewEl = document.getElementById('puzzle-preview-img');
+                    if (previewEl) previewEl.src = e.target.result;
+                    inisialisasiPuzzle();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        let susunanPuzzle = Array.from({length: 15}, (_, i) => i);
+        let tileTerpilih = null;
+        let langkahPuzzle = 0;
+        let puzzleSelesai = false;
+
+        function inisialisasiPuzzle() {
+            langkahPuzzle = 0;
+            puzzleSelesai = false;
+            tileTerpilih = null;
+            document.getElementById('puzzle-moves-display').innerText = "Langkah: 0";
+            document.getElementById('puzzle-feedback').innerHTML = "";
+            acakPuzzle();
+        }
+
+        function acakPuzzle() {
+            langkahPuzzle = 0;
+            puzzleSelesai = false;
+            tileTerpilih = null;
+            document.getElementById('puzzle-moves-display').innerText = "Langkah: 0";
+            document.getElementById('puzzle-feedback').innerHTML = "";
+
+            do {
+                susunanPuzzle.sort(() => Math.random() - 0.5);
+            } while (cekApakahMenang());
+
+            renderPapanPuzzle();
+        }
+
+        function renderPapanPuzzle() {
+            const board = document.getElementById('puzzle-board');
+            if (!board) return;
+            board.innerHTML = "";
+
+            susunanPuzzle.forEach((posisiAsli, indexSekarang) => {
+                const tile = document.createElement('div');
+                tile.className = "puzzle-tile";
+                if (tileTerpilih === indexSekarang) {
+                    tile.classList.add('selected');
+                }
+
+                const baris = Math.floor(posisiAsli / 3);
+                const kolom = posisiAsli % 3;
+                const x = -(kolom * 86);
+                const y = -(baris * 68);
+                
+                tile.style.backgroundImage = `url('${gambarBatikPuzzle}')`;
+                tile.style.backgroundPosition = `${x}px ${y}px`;
+
+                tile.onclick = () => klikTilePuzzle(indexSekarang);
+                board.appendChild(tile);
+            });
+        }
+
+        function klikTilePuzzle(index) {
+            if (puzzleSelesai) return;
+
+            if (tileTerpilih === null) {
+                tileTerpilih = index;
+                renderPapanPuzzle();
+            } else if (tileTerpilih === index) {
+                tileTerpilih = null;
+                renderPapanPuzzle();
+            } else {
+                const temp = susunanPuzzle[tileTerpilih];
+                susunanPuzzle[tileTerpilih] = susunanPuzzle[index];
+                susunanPuzzle[index] = temp;
+
+                langkahPuzzle++;
+                document.getElementById('puzzle-moves-display').innerText = `Langkah: ${langkahPuzzle}`;
+                tileTerpilih = null;
+                renderPapanPuzzle();
+
+                if (cekApakahMenang()) {
+                    puzzleSelesai = true;
+                    tambahPoin(100);
+                    document.getElementById('puzzle-feedback').innerHTML = 
+                        `<span style="color: var(--success); font-weight: bold; font-size: 0.95rem;">
+                            🎉 SELAMAT! Kain Batik Berhasil Dirakit!<br>
+                            Kamu Mendapatkan <b>+100 Poin Budaya</b>! 🌟
+                        </span>`;
+                }
+            }
+        }
+
+        function cekApakahMenang() {
+            for (let i = 0; i < 15; i++) {
+                if (susunanPuzzle[i] !== i) return false;
+            }
+            return true;
+        }
+
+        // --- SISTEM KUIS BUDAYA ---
+        const soalGame = [
+            {
+                soal: "Camilan khas Tuban yang terbuat dari 100% tanah liat murni tanpa bahan tambahan disebut apa?",
+                opsi: ["Ampo", "Gemblong", "Dumbek", "Serabeh Selong"],
+                jawaban: 0
+            },
+            {
+                soal: "Dari manakah asal usul bunyi kata 'Gedog' pada nama Batik Gedog Tuban?",
+                opsi: ["Bunyi ombak pesisir Tuban", "Bunyi 'dog... dog...' kayu alat tenun", "Bunyi kentongan penjaga desa", "Bunyi tabuhan rebana Sunan Bonang"],
+                jawaban: 1
+            },
+            {
+                soal: "Kudapan manis legit terbungkus daun lontar muda berbentuk spiral corong terompet adalah...",
+                opsi: ["Pelas Palang", "Dumbek", "Serabi Lodeh", "Jenang Bonang"],
+                jawaban: 1
+            },
+            {
+                soal: "Motif Batik Gedog yang memiliki makna menolak bahaya serta penyakit adalah motif...",
+                opsi: ["Burung Lokcan", "Kembang Kates", "Gringsing", "Unyeng-Unyeng"],
+                jawaban: 2
+            },
+            {
+                soal: "Bumbu khas beraroma harum tebal yang menjadi ciri wajib olahan Becek Menthok khas Tuban adalah...",
+                opsi: ["Kayu Mesoyi", "Kluwek", "Kayu Manis", "Asam Kandis"],
+                jawaban: 0
+            },
+            {
+                soal: "Kuliner pesisir Palang yang menggunakan rumput laut kenyal rebus berpadu bumbu petis disebut...",
+                opsi: ["Rujak Cingur", "Rujak Engos-Engos", "Pentol Ikan Bancar", "Pelas Palang"],
+                jawaban: 1
+            }
+        ];
+
+        let indexSoal = 0;
+
+        function mulaiMiniGame() {
+            indexSoal = 0;
+            tampilkanSoal();
+        }
+
+        function tampilkanSoal() {
+            const containerOpsi = document.getElementById('game-options-container');
+            const teksSoal = document.getElementById('game-question-text');
+            const teksFeedback = document.getElementById('game-feedback-text');
+            const btnNext = document.getElementById('btn-next-question');
+
+            teksFeedback.innerText = "";
+            btnNext.classList.add('hidden');
+            containerOpsi.innerHTML = "";
+
+            if (indexSoal >= soalGame.length) {
+                teksSoal.innerText = `🎉 Kuis Selesai!\nSemua pertanyaan telah dijawab.`;
+                teksFeedback.innerHTML = `<span style="color: var(--primary);">Hebat! Pengetahuanmu tentang khazanah Tuban luar biasa!</span>`;
+                btnNext.innerText = "🔄 Main Kuis Lagi";
+                btnNext.classList.remove('hidden');
+                btnNext.onclick = mulaiMiniGame;
+                return;
+            }
+
+            const current = soalGame[indexSoal];
+            teksSoal.innerText = `${indexSoal + 1}. ${current.soal}`;
+
+            current.opsi.forEach((opsi, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-option";
+                btn.innerText = opsi;
+                btn.onclick = () => pilihJawaban(idx, btn);
+                containerOpsi.appendChild(btn);
+            });
+        }
+
+        function pilihJawaban(indexDipilih, tombol) {
+            const current = soalGame[indexSoal];
+            const allBtn = document.querySelectorAll('.btn-option');
+            const teksFeedback = document.getElementById('game-feedback-text');
+            const btnNext = document.getElementById('btn-next-question');
+
+            allBtn.forEach(b => b.disabled = true);
+
+            if (indexDipilih === current.jawaban) {
+                tombol.classList.add('correct');
+                tambahPoin(20);
+                teksFeedback.innerHTML = `<span style="color: var(--success);">Benar! Kamu dapat <b>+20 Poin</b>! 🌟</span>`;
+            } else {
+                tombol.classList.add('wrong');
+                allBtn[current.jawaban].classList.add('correct');
+                teksFeedback.innerHTML = `<span style="color: var(--error);">Kurang tepat! Jawaban benar: ${current.opsi[current.jawaban]}</span>`;
+            }
+
+            btnNext.innerText = "Lanjut ➔";
+            btnNext.onclick = pertanyaanSelanjutnya;
+            btnNext.classList.remove('hidden');
+        }
+
+        function pertanyaanSelanjutnya() {
+            indexSoal++;
+            tampilkanSoal();
+        }
+
+        // FUNGSI UMUM & KAMERA
+        function aturSalamWaktu() {
+            const jam = new Date().getHours();
+            let salam = "Sugeng Rawuh!";
+            if (jam >= 0 && jam < 10) salam = "Sugeng Enjang! 🌅";
+            else if (jam >= 10 && jam < 15) salam = "Sugeng Siang! ☀️";
+            else if (jam >= 15 && jam < 18) salam = "Sugeng Sonten! 🌇";
+            else salam = "Sugeng Dalu! 🌙";
+            document.getElementById('salam-text').innerText = salam;
+        }
+
+        async function bukaKamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                document.getElementById('webcam').srcObject = stream;
+            } catch (err) {
+                try {
+                    const streamAlt = await navigator.mediaDevices.getUserMedia({ video: true });
+                    document.getElementById('webcam').srcObject = streamAlt;
+                } catch (e) {
+                    alert("Akses kamera ditolak/tidak aktif di pratinjau browser.");
+                }
+            }
+        }
+
+        function bukaEdukasi() {
+            sembunyikanSemuaHalaman();
+            document.getElementById('page-edukasi').classList.remove('hidden');
+        }
+
+        function tutupEdukasi() {
+            document.getElementById('page-edukasi').classList.add('hidden');
+            document.getElementById('page-scan').classList.remove('hidden');
+        }
+
+        function sembunyikanSemuaHalaman() {
+    [
+        'scan',
+        'edukasi',
+        'gedog',
+        'peta',
+        'makstub',
+        'minstub',
+        'jetub',
+        'wistub',
+        'kastub',
+        'game'
+    ].forEach(id => {
+        const el = document.getElementById('page-' + id);
+        if (el) el.classList.add('hidden');
+    });
+}
+
+        function switchPage(page, el) {
+            sembunyikanSemuaHalaman();
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            const targetPage = document.getElementById('page-' + page);
+            if (targetPage) targetPage.classList.remove('hidden');
+            el.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (page === 'game') {
+                kembaliKeLobbyGame();
+            }
+        }
+
+        function simulasiScanError() {
+            document.getElementById('error-result').classList.remove('hidden');
+        }
+
+        function cariMotif() {
+            let input = document.getElementById('searchBatik').value.toLowerCase();
+            let items = document.querySelectorAll('#gedogList .gedog-item');
+            for (let i = 0; i < items.length; i++) {
+                let namaMotif = items[i].getElementsByTagName('h4')[0].innerText.toLowerCase();
+                items[i].style.display = namaMotif.includes(input) ? "" : "none";
+            }
+        }
+
+        window.onload = function() {
+            aturSalamWaktu();
+            bukaKamera();
+            renderMakstub(daftarMakstub);
+            renderMinstub(daftarMinstub);
+            renderWistub(daftarWistub);
+            renderKastub(daftarKastub);
+        };
+    </script>
+</body>
+</html>
